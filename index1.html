@@ -1067,6 +1067,22 @@
       pendingRequestsBody.appendChild(row);
     });
   }
+  query(
+  collection(db, 'stockRequests'),
+  where('status', '==', 'pending'),
+  orderBy('timestamp', 'desc')
+)
+  query(
+  collection(db, 'invoices'),
+  where('status', '==', 'pending'),
+  orderBy('createdAt', 'desc')
+)
+  query(
+  collection(db, 'invoices'),
+  where('createdAt', '>=', startDate),
+  where('status', '==', 'approved')
+)
+  
 
   // Admin functions
   async function loadPendingApprovals() {
