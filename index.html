@@ -4,10 +4,6 @@
   <meta charset="UTF-8" />
   <title>Campa Beverages - Inventory & Invoice System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
- 
-
-<!-- Then your button later in the HTML -->
-<button onclick="login()" class="btn btn-primary w-100">Login</button>
   <style>
     body { font-family: Arial; padding: 20px; max-width: 1200px; margin: auto; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -262,7 +258,7 @@
     apiKey: "AIzaSyBm2Y2-KaPh_9prtDyEh75ys9bOS_YivyU",
     authDomain: "campacola-45a6c.firebaseapp.com",
     projectId: "campacola-45a6c",
-    storageBucket: "campacola-45a6c.firebasestorage.app",
+    storageBucket: "campacola-45a6c.appspot.com",
     messagingSenderId: "950062364838",
     appId: "1:950062364838:web:c016c1c2b63d661dc09c67",
     measurementId: "G-0F1FMP4D6X"
@@ -286,8 +282,8 @@
     document.getElementById('appContainer').classList.add('hidden');
     document.getElementById('loginPage').classList.remove('hidden');
 
-    // Add this at the end of your module script
-document.getElementById('loginBtn').addEventListener('click', login);
+    // Connect login button
+    document.getElementById('loginBtn').addEventListener('click', login);
     
     // Check if user is already logged in
     onAuthStateChanged(auth, (user) => {
@@ -308,18 +304,17 @@ document.getElementById('loginBtn').addEventListener('click', login);
   }
 
   // Login function
-  function login() {
+  async function login() {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        currentUser = userCredential.user;
-        loadUserData();
-      })
-      .catch((error) => {
-        alert('Login failed: ' + error.message);
-      });
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      currentUser = userCredential.user;
+      loadUserData();
+    } catch (error) {
+      alert('Login failed: ' + error.message);
+    }
   }
 
   // Logout function
@@ -732,6 +727,18 @@ document.getElementById('loginBtn').addEventListener('click', login);
     alert('Viewing invoice ' + invoiceId);
     // You can implement a modal or new page to show complete invoice details
   }
+
+  // Expose functions to global scope
+  window.login = login;
+  window.logout = logout;
+  window.addProduct = addProduct;
+  window.removeItem = removeItem;
+  window.saveInvoice = saveInvoice;
+  window.printInvoice = printInvoice;
+  window.addToVanStock = addToVanStock;
+  window.approveInvoice = approveInvoice;
+  window.rejectInvoice = rejectInvoice;
+  window.viewInvoice = viewInvoice;
 
   // Initialize the app when page loads
   window.onload = initApp;
