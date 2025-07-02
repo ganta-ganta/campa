@@ -2,163 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Campa Beverages - Inventory & Invoice System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { 
-      font-family: Arial; 
-      padding: 10px; 
-      max-width: 100%; 
-      margin: auto; 
-      font-size: 14px; 
-    }
-    table { 
-      width: 100%; 
-      border-collapse: collapse; 
-      margin-top: 10px; 
-      font-size: 12px;
-    }
-    th, td { 
-      border: 1px solid #ccc; 
-      padding: 6px; 
-      text-align: center; 
-    }
-    th { 
-      background-color: #f4f4f4; 
-      font-size: 12px;
-    }
-    .btn { 
-      padding: 6px 10px; 
-      font-size: 12px;
-      color: white; 
-      border: none; 
-      cursor: pointer; 
-      margin: 2px 0;
-    }
-    .btn-sm {
-      padding: 4px 8px;
-      font-size: 11px;
-    }
+    body { font-family: Arial; padding: 20px; max-width: 1200px; margin: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f4f4f4; }
+    .btn { padding: 8px 12px; color: white; border: none; cursor: pointer; }
     .btn-primary { background: #007bff; }
     .btn-success { background: green; }
     .btn-danger { background: red; }
-    .btn-warning { background: #ffc107; }
     .right { text-align: right; }
-    .signature { margin-top: 20px; }
-    .company-header { 
-      background-color: #f8f9fa; 
-      padding: 10px; 
-      border-radius: 5px;
-      font-size: 12px;
-    }
-    .login-container { 
-      max-width: 100%; 
-      margin: 20px auto;
-      padding: 0 10px;
-    }
+    .signature { margin-top: 40px; }
+    .company-header { background-color: #f8f9fa; padding: 20px; border-radius: 5px; }
+    .login-container { max-width: 400px; margin: 50px auto; }
     .hidden { display: none; }
-    .nav-tabs { 
-      margin-bottom: 10px;
-      font-size: 12px;
-    }
-    .nav-link {
-      padding: 8px 12px;
-    }
-    .offline-banner { 
-      position: fixed; 
-      top: 0; 
-      left: 0; 
-      right: 0; 
-      background: #ffc107; 
-      color: #000; 
-      padding: 8px; 
-      text-align: center;
-      z-index: 1000;
-      font-size: 12px;
-    }
-    .modal-lg { max-width: 95%; }
-    .form-control, .form-select {
-      padding: 6px;
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-    .input-group {
-      margin-bottom: 6px;
-    }
-    .card {
-      margin-bottom: 10px;
-    }
-    .card-body {
-      padding: 10px;
-    }
-    .card-title {
-      font-size: 14px;
-    }
-    .card-text {
-      font-size: 12px;
-    }
-    h2 { font-size: 18px; }
-    h3 { font-size: 16px; }
-    h4 { font-size: 14px; }
-    
-    /* Mobile-specific styles */
-    @media (max-width: 576px) {
-      .nav-tabs .nav-item {
-        width: 33.33%;
-        text-align: center;
-      }
-      .nav-link {
-        padding: 8px 4px;
-        font-size: 11px;
-      }
-      .company-header {
-        padding: 8px;
-      }
-      .tab-content {
-        padding: 5px;
-      }
-      .row {
-        margin-left: -5px;
-        margin-right: -5px;
-      }
-      .col-md-6, .col-md-4, .col-md-2 {
-        padding-left: 5px;
-        padding-right: 5px;
-      }
-      #invoiceBody td, #invoiceBody th {
-        padding: 4px;
-      }
-      .btn {
-        width: 100%;
-        margin-bottom: 5px;
-      }
-      .modal-body {
-        padding: 10px;
-      }
-    }
-    
-    /* Print styles */
-    @media print {
-      body { padding: 0; font-size: 12px; }
-      .nav-tabs, .btn, #offlineBanner { display: none !important; }
-      .company-header { padding: 5px; }
-      table { font-size: 10px; }
-      th, td { padding: 3px; }
-    }
+    .nav-tabs { margin-bottom: 20px; }
   </style>
 </head>
 <body>
 
-<div id="offlineBanner" class="offline-banner hidden">
-  You are currently offline. Changes will be saved locally and synced when you reconnect.
-</div>
-
 <div id="loginPage" class="login-container">
-  <h2 class="text-center mb-3">Campa Beverages Login</h2>
+  <h2 class="text-center mb-4">Campa Beverages Login</h2>
   <div class="card">
     <div class="card-body">
-      <div class="mb-2">
+      <div class="mb-3">
         <label for="loginEmail" class="form-label">Email</label>
         <input type="email" class="form-control" id="loginEmail" placeholder="operator@campa.com">
       </div>
@@ -174,220 +43,189 @@
 <div id="appContainer" class="hidden">
   <ul class="nav nav-tabs" id="myTab">
     <li class="nav-item">
-      <a class="nav-link active" data-bs-toggle="tab" href="#invoiceTab">Invoices</a>
+      <a class="nav-link active" data-bs-toggle="tab" href="#invoiceTab">Invoice Generator</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="tab" href="#stockTab">Stock</a>
+      <a class="nav-link" data-bs-toggle="tab" href="#stockTab">Van Stock Management</a>
     </li>
     <li class="nav-item" id="adminTabItem">
-      <a class="nav-link" data-bs-toggle="tab" href="#adminTab">Admin</a>
+      <a class="nav-link" data-bs-toggle="tab" href="#adminTab">Admin Dashboard</a>
     </li>
     <li class="nav-item ml-auto">
-      <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
+      <button onclick="logout()" class="btn btn-danger">Logout</button>
     </li>
   </ul>
 
   <div class="tab-content">
-    <!-- Invoice Generator Tab (Mobile Optimized) -->
+    <!-- Invoice Generator Tab --->
     <div class="tab-pane fade show active" id="invoiceTab">
       <div class="company-header">
         <h2>Campa Beverages Pvt. Ltd.</h2>
-        <p><strong>Invoice No:</strong> <span id="invoiceNo"></span></p>
-        <p><strong>Date:</strong> <span id="invoiceDate"></span></p>
+        <p>123 Beverage Street, Hyderabad, Telangana - 500001</p>
+        <p><strong>GSTIN:</strong> 37XXXXXXXXXX | <strong>Phone:</strong> 040-12345678 | <strong>Email:</strong> info@campabeverages.com</p>
+        <p><strong>Invoice No:</strong> <span id="invoiceNo"></span> | <strong>Date:</strong> <span id="invoiceDate"></span></p>
       </div>
 
-      <div class="row mb-2">
+      <hr>
+
+      <div class="row mb-3">
         <div class="col-md-6">
-          <h4>Dealer Info</h4>
-          <input type="text" id="dealerName" class="form-control mb-1" placeholder="Dealer Name" required>
-          <input type="text" id="dealerAddress" class="form-control mb-1" placeholder="Address">
-          <input type="text" id="dealerGST" class="form-control mb-1" placeholder="GSTIN">
+          <h4>Dealer Information</h4>
+          <input type="text" id="dealerName" class="form-control mb-2" placeholder="Dealer Name">
+          <input type="text" id="dealerAddress" class="form-control mb-2" placeholder="Dealer Address">
+          <input type="text" id="dealerGST" class="form-control mb-2" placeholder="Dealer GSTIN">
         </div>
         <div class="col-md-6">
           <h4>Add Product</h4>
-          <select id="productSelect" class="form-select mb-1">
-            <option value="">-- Select --</option>
+          <select id="productSelect" class="form-select mb-2">
+            <option value="">-- Select Product --</option>
             <option value="Campa Cola|600 ml|28">Campa Cola - 600 ml</option>
             <option value="Campa Orange|600 ml|28">Campa Orange - 600 ml</option>
             <option value="Campa Lemon|600 ml|28">Campa Lemon - 600 ml</option>
-            <option value="Campa Cloudy Lemon|600 ml|30">Cloudy Lemon - 600 ml</option>
-            <option value="Power-Up Cola|500 ml|32">Power-Up - 500 ml</option>
+            <option value="Campa Cloudy Lemon|600 ml|30">Campa Cloudy Lemon - 600 ml</option>
+            <option value="Power-Up Cola|500 ml|32">Power-Up Cola - 500 ml</option>
             <option value="Campa Soda|500 ml|25">Campa Soda - 500 ml</option>
-            <option value="Bubbles Soda|750 ml|28">Bubbles - 750 ml</option>
-            <option value="Spinner Energy|200 ml|35">Spinner - 200 ml</option>
-            <option value="Runner Energy|250 ml|38">Runner - 250 ml</option>
+            <option value="Bubbles Soda|750 ml|28">Bubbles Soda - 750 ml</option>
+            <option value="Spinner Energy Drink|200 ml|35">Spinner Energy Drink - 200 ml</option>
+            <option value="Runner Energy|250 ml|38">Runner Energy Drink - 250 ml</option>
             <option value="Joos Mango|200 ml|22">Joos Mango - 200 ml</option>
-            <option value="Independence Water|1.5 L|20">Water - 1.5 L</option>
-            <option value="Sure Water|1 L|18">Water - 1 L</option>
+            <option value="Independence Water|1.5 L|20">Independence Water - 1.5 L</option>
+            <option value="Sure Water|1 L|18">Sure Water - 1 L</option>
           </select>
-          <div class="input-group mb-2">
-            <input type="number" id="qty" class="form-control" placeholder="Qty" min="1" value="1">
-            <button class="btn btn-primary" onclick="addProduct()">Add</button>
+          <div class="input-group mb-3">
+            <input type="number" id="qty" class="form-control" placeholder="Qty" min="1">
+            <button class="btn btn-primary" onclick="addProduct()">Add Product</button>
           </div>
         </div>
       </div>
 
-      <div style="overflow-x: auto;">
-        <table class="table-bordered">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Size</th>
-              <th>Qty</th>
-              <th>Rate</th>
-              <th>Amount</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="invoiceBody"></tbody>
-        </table>
-      </div>
+      <table class="table-bordered">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Size</th>
+            <th>Qty</th>
+            <th>Rate (₹)</th>
+            <th>Amount (₹)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="invoiceBody"></tbody>
+      </table>
 
-      <div class="right mt-2">
+      <div class="right mt-3">
         <h4>Subtotal: ₹<span id="subtotal">0.00</span></h4>
         <h4>GST (18%): ₹<span id="gst">0.00</span></h4>
-        <h3>Total: ₹<span id="total">0.00</span></h3>
+        <h3>Grand Total: ₹<span id="total">0.00</span></h3>
       </div>
 
-      <div class="mt-3">
-        <button class="btn btn-success" onclick="saveInvoice()">Save</button>
-        <button class="btn btn-success" onclick="printInvoice()">Print</button>
-        <button class="btn btn-warning" onclick="saveDraft()">Draft</button>
+      <div class="signature mt-4">
+        <p><strong>Authorized Signature:</strong> ____________________</p>
+        <p><strong>Stamp:</strong> ____________________</p>
+      </div>
+
+      <div class="mt-4">
+        <button class="btn btn-success" onclick="saveInvoice()">Save Invoice</button>
+        <button class="btn btn-success" onclick="printInvoice()">🖨️ Print Invoice</button>
       </div>
     </div>
 
-    <!-- Van Stock Management Tab (Mobile Optimized) -->
+    <!-- Van Stock Management Tab -->
     <div class="tab-pane fade" id="stockTab">
-      <h3>Van Stock - <span id="vanOperatorName"></span></h3>
-      <div class="alert alert-info py-2">
-        <strong>Current:</strong> <span id="currentStockDisplay"></span>
+      <h3>Van Stock Management - <span id="vanOperatorName"></span></h3>
+      <div class="alert alert-info">
+        <strong>Current Stock:</strong> <span id="currentStockDisplay"></span>
       </div>
       
-      <h4>Request Stock</h4>
+      <h4>Load Stock</h4>
       <div class="row">
         <div class="col-md-6">
-          <select id="stockProductSelect" class="form-select mb-1">
-            <option value="">-- Select --</option>
+          <select id="stockProductSelect" class="form-select mb-2">
+            <option value="">-- Select Product --</option>
             <option value="Campa Cola|600 ml">Campa Cola - 600 ml</option>
             <option value="Campa Orange|600 ml">Campa Orange - 600 ml</option>
             <option value="Campa Lemon|600 ml">Campa Lemon - 600 ml</option>
-            <option value="Campa Cloudy Lemon|600 ml">Cloudy Lemon - 600 ml</option>
-            <option value="Power-Up Cola|500 ml">Power-Up - 500 ml</option>
+            <option value="Campa Cloudy Lemon|600 ml">Campa Cloudy Lemon - 600 ml</option>
+            <option value="Power-Up Cola|500 ml">Power-Up Cola - 500 ml</option>
             <option value="Campa Soda|500 ml">Campa Soda - 500 ml</option>
-            <option value="Bubbles Soda|750 ml">Bubbles - 750 ml</option>
-            <option value="Spinner Energy|200 ml">Spinner - 200 ml</option>
-            <option value="Runner Energy|250 ml">Runner - 250 ml</option>
+            <option value="Bubbles Soda|750 ml">Bubbles Soda - 750 ml</option>
+            <option value="Spinner Energy Drink|200 ml">Spinner Energy Drink - 200 ml</option>
+            <option value="Runner Energy|250 ml">Runner Energy Drink - 250 ml</option>
             <option value="Joos Mango|200 ml">Joos Mango - 200 ml</option>
-            <option value="Independence Water|1.5 L">Water - 1.5 L</option>
-            <option value="Sure Water|1 L">Water - 1 L</option>
+            <option value="Independence Water|1.5 L">Independence Water - 1.5 L</option>
+            <option value="Sure Water|1 L">Sure Water - 1 L</option>
           </select>
         </div>
         <div class="col-md-4">
-          <input type="number" id="stockQty" class="form-control" placeholder="Qty" min="1" value="1">
+          <input type="number" id="stockQty" class="form-control" placeholder="Quantity" min="1">
         </div>
         <div class="col-md-2">
-          <button class="btn btn-primary w-100" onclick="requestStock()">Request</button>
+          <button class="btn btn-primary w-100" onclick="addToVanStock()">Add to Van</button>
         </div>
       </div>
       
-      <h4 class="mt-3">Current Stock</h4>
-      <div style="overflow-x: auto;">
-        <table class="table-bordered">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Size</th>
-              <th>Loaded</th>
-              <th>Sold</th>
-              <th>Remaining</th>
-            </tr>
-          </thead>
-          <tbody id="vanStockBody"></tbody>
-        </table>
-      </div>
-      
-      <h4 class="mt-3">Pending Requests</h4>
-      <div style="overflow-x: auto;">
-        <table class="table-bordered">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Size</th>
-              <th>Qty</th>
-              <th>Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="pendingRequestsBody"></tbody>
-        </table>
-      </div>
+      <table class="table-bordered mt-3" id="vanStockTable">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Size</th>
+            <th>Loaded Qty</th>
+            <th>Sold Qty</th>
+            <th>Remaining</th>
+          </tr>
+        </thead>
+        <tbody id="vanStockBody"></tbody>
+      </table>
     </div>
 
-    <!-- Admin Dashboard Tab (Mobile Optimized) -->
+    <!-- Admin Dashboard Tab -->
     <div class="tab-pane fade" id="adminTab">
       <h3>Admin Dashboard</h3>
       
-      <div class="row mb-2">
+      <div class="row mb-4">
         <div class="col-md-6">
           <div class="card">
-            <div class="card-header bg-primary text-white py-2">
-              Pending Invoices
+            <div class="card-header bg-primary text-white">
+              Pending Approvals
             </div>
-            <div class="card-body p-2">
+            <div class="card-body">
               <div id="pendingApprovalsList"></div>
             </div>
           </div>
         </div>
         <div class="col-md-6">
           <div class="card">
-            <div class="card-header bg-warning text-white py-2">
-              Pending Stock
+            <div class="card-header bg-success text-white">
+              Van Operators Summary
             </div>
-            <div class="card-body p-2">
-              <div id="pendingStockApprovals"></div>
+            <div class="card-body">
+              <div id="vanOperatorsSummary"></div>
             </div>
           </div>
         </div>
       </div>
       
-      <div class="card mb-2">
-        <div class="card-header bg-success text-white py-2">
-          Van Operators
-        </div>
-        <div class="card-body p-2">
-          <div id="vanOperatorsSummary"></div>
-        </div>
-      </div>
-      
       <h4>Recent Invoices</h4>
-      <div class="mb-2">
-        <button class="btn btn-secondary btn-sm" onclick="exportInvoices('csv')">CSV</button>
-        <button class="btn btn-secondary btn-sm" onclick="exportInvoices('excel')">Excel</button>
-      </div>
-      <div style="overflow-x: auto;">
-        <table class="table-bordered">
-          <thead>
-            <tr>
-              <th>Inv No</th>
-              <th>Date</th>
-              <th>Dealer</th>
-              <th>Amount</th>
-              <th>Operator</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="invoicesList"></tbody>
-        </table>
-      </div>
+      <table class="table-bordered">
+        <thead>
+          <tr>
+            <th>Invoice No</th>
+            <th>Date</th>
+            <th>Dealer</th>
+            <th>Amount</th>
+            <th>Van Operator</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="invoicesList"></tbody>
+      </table>
     </div>
   </div>
 </div>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- SheetJS for export -->
-<script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
 
 <!-- Firebase SDK -->
 <script type="module">
@@ -437,27 +275,15 @@
   let invoiceItems = [];
   let vanStock = {};
   let invoiceCounter = 0;
-  let isOnline = navigator.onLine;
-  const offlineInvoices = JSON.parse(localStorage.getItem('offlineInvoices')) || [];
-  const offlineStockRequests = JSON.parse(localStorage.getItem('offlineStockRequests')) || [];
-  const draftInvoices = JSON.parse(localStorage.getItem('draftInvoices')) || [];
 
   // Initialize the app
   function initApp() {
     // Hide app container initially
     document.getElementById('appContainer').classList.add('hidden');
     document.getElementById('loginPage').classList.remove('hidden');
-    
-    // Create invoice modal
-    createInvoiceModal();
-    
+
     // Connect login button
     document.getElementById('loginBtn').addEventListener('click', login);
-    
-    // Setup offline detection
-    window.addEventListener('online', handleConnectionChange);
-    window.addEventListener('offline', handleConnectionChange);
-    updateOnlineStatus();
     
     // Check if user is already logged in
     onAuthStateChanged(auth, (user) => {
@@ -466,90 +292,15 @@
         loadUserData();
         document.getElementById('appContainer').classList.remove('hidden');
         document.getElementById('loginPage').classList.add('hidden');
+        
+        // Show/hide admin tab based on user role
+        if (user.email === 'admin@campabeverages.com') {
+          document.getElementById('adminTabItem').classList.remove('hidden');
+        } else {
+          document.getElementById('adminTabItem').classList.add('hidden');
+        }
       }
     });
-  }
-
-  // Handle connection changes
-  function handleConnectionChange() {
-    isOnline = navigator.onLine;
-    updateOnlineStatus();
-    if (isOnline) {
-      syncOfflineData();
-    }
-  }
-
-  function updateOnlineStatus() {
-    const offlineBanner = document.getElementById('offlineBanner');
-    if (isOnline) {
-      offlineBanner.classList.add('hidden');
-    } else {
-      offlineBanner.classList.remove('hidden');
-    }
-  }
-
-  // Sync offline data when connection is restored
-  async function syncOfflineData() {
-    if (!currentUser) return;
-    
-    // Sync offline invoices
-    while (offlineInvoices.length > 0) {
-      const invoice = offlineInvoices[0];
-      try {
-        await addDoc(collection(db, 'invoices'), invoice);
-        offlineInvoices.shift();
-        localStorage.setItem('offlineInvoices', JSON.stringify(offlineInvoices));
-      } catch (error) {
-        console.error("Error syncing offline invoice:", error);
-        break;
-      }
-    }
-    
-    // Sync stock requests
-    while (offlineStockRequests.length > 0) {
-      const request = offlineStockRequests[0];
-      try {
-        await addDoc(collection(db, 'stockRequests'), request);
-        offlineStockRequests.shift();
-        localStorage.setItem('offlineStockRequests', JSON.stringify(offlineStockRequests));
-      } catch (error) {
-        console.error("Error syncing stock request:", error);
-        break;
-      }
-    }
-    
-    // Reload data after sync
-    if (currentUser.email === 'admin@campabeverages.com') {
-      loadPendingApprovals();
-      loadPendingStockApprovals();
-    } else {
-      loadPendingStockRequests();
-    }
-  }
-
-  // Create invoice modal for detailed view
-  function createInvoiceModal() {
-    const modalHTML = `
-      <div class="modal fade" id="invoiceModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Invoice Details</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="invoiceModalBody">
-              <!-- Content will be loaded dynamically -->
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" onclick="printInvoiceFromModal()">Print</button>
-              <span id="approvalButtons"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
   }
 
   // Login function
@@ -579,59 +330,43 @@
   async function loadUserData() {
     if (!currentUser) return;
     
-    // Show/hide admin tab based on user role
-    const isAdmin = currentUser.email === 'admin@campabeverages.com';
-    document.getElementById('adminTabItem').classList.toggle('hidden', !isAdmin);
-    
-    if (isAdmin) {
-      loadAdminData();
-    } else {
-      loadOperatorData();
-    }
-    
-    // Generate invoice number
-    generateInvoiceNo();
-  }
-
-  // Load operator-specific data
-  async function loadOperatorData() {
     // Set van operator name
     document.getElementById('vanOperatorName').textContent = currentUser.email.split('@')[0];
     
-    // Load van stock
-    try {
-      const vanStockDoc = await getDoc(doc(db, 'vanStock', currentUser.uid));
-      if (vanStockDoc.exists()) {
-        vanStock = vanStockDoc.data().stock || {};
-        updateVanStockDisplay();
-      }
-    } catch (error) {
-      console.error("Error loading van stock:", error);
-    }
-    
-    // Load pending stock requests
-    loadPendingStockRequests();
-  }
-
-  // Load admin-specific data
-  async function loadAdminData() {
-    loadPendingApprovals();
-    loadPendingStockApprovals();
-    loadVanOperatorsSummary();
-    loadRecentInvoices();
-  }
-
-  // Generate invoice number
-  async function generateInvoiceNo() {
+    // Load invoice counter
     try {
       const counterDoc = await getDoc(doc(db, 'counters', 'invoiceCounter'));
       if (counterDoc.exists()) {
         invoiceCounter = counterDoc.data().value;
+        generateInvoiceNo();
       }
     } catch (error) {
       console.error("Error loading invoice counter:", error);
     }
     
+    // Load van stock for operators
+    if (currentUser.email !== 'admin@campabeverages.com') {
+      try {
+        const vanStockDoc = await getDoc(doc(db, 'vanStock', currentUser.uid));
+        if (vanStockDoc.exists()) {
+          vanStock = vanStockDoc.data().stock || {};
+          updateVanStockDisplay();
+        }
+      } catch (error) {
+        console.error("Error loading van stock:", error);
+      }
+    }
+    
+    // Load admin data if admin
+    if (currentUser.email === 'admin@campabeverages.com') {
+      loadPendingApprovals();
+      loadVanOperatorsSummary();
+      loadRecentInvoices();
+    }
+  }
+
+  // Generate invoice number
+  function generateInvoiceNo() {
     const now = new Date();
     const id = 'CB-' + now.getFullYear() + '-' + String(invoiceCounter + 1).padStart(4, '0');
     document.getElementById('invoiceNo').textContent = id;
@@ -642,15 +377,14 @@
   function addProduct() {
     const select = document.getElementById('productSelect');
     const value = select.value;
-    const qty = parseInt(document.getElementById('qty').value) || 1;
+    const qty = parseInt(document.getElementById('qty').value);
     
-    if (!value) return alert('Please select a product.');
-    if (qty <= 0) return alert('Quantity must be greater than 0.');
+    if (!value || qty <= 0) return alert('Select a product and enter valid quantity.');
     
+    // Check if product is available in van stock
     const [name, size, rate] = value.split('|');
     const productKey = `${name}|${size}`;
     
-    // Check stock if operator
     if (currentUser.email !== 'admin@campabeverages.com') {
       if (!vanStock[productKey] || vanStock[productKey].remaining < qty) {
         return alert('Not enough stock in van for this product!');
@@ -660,7 +394,7 @@
     const amount = qty * parseFloat(rate);
     subtotal += amount;
     
-    // Add to invoice items
+    // Add to invoice items array
     const item = {
       name,
       size,
@@ -697,7 +431,7 @@
         <td>${item.qty}</td>
         <td>₹${item.rate.toFixed(2)}</td>
         <td>₹${item.amount.toFixed(2)}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">X</button></td>
+        <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">Remove</button></td>
       `;
       invoiceBody.appendChild(row);
       newSubtotal += item.amount;
@@ -747,8 +481,8 @@
       invoiceDate: new Date(),
       dealer: {
         name: dealerName,
-        address: document.getElementById('dealerAddress').value || '',
-        gstin: document.getElementById('dealerGST').value || ''
+        address: document.getElementById('dealerAddress').value,
+        gstin: document.getElementById('dealerGST').value
       },
       items: invoiceItems,
       subtotal,
@@ -756,76 +490,30 @@
       total,
       status: currentUser.email === 'admin@campabeverages.com' ? 'approved' : 'pending',
       createdBy: currentUser.email,
-      createdAt: serverTimestamp(),
-      isOffline: !isOnline
+      createdAt: serverTimestamp()
     };
     
-    if (isOnline) {
-      try {
-        // Save invoice
-        await addDoc(collection(db, 'invoices'), invoiceData);
-        
-        // Update invoice counter
-        invoiceCounter++;
-        await setDoc(doc(db, 'counters', 'invoiceCounter'), { value: invoiceCounter });
-        
-        // Update van stock if operator
-        if (currentUser.email !== 'admin@campabeverages.com') {
-          await setDoc(doc(db, 'vanStock', currentUser.uid), {
-            stock: vanStock,
-            lastUpdated: serverTimestamp()
-          });
-        }
-        
-        alert('Invoice saved successfully!');
-        resetInvoiceForm();
-      } catch (error) {
-        // Fallback to offline
-        saveInvoiceOffline(invoiceData);
+    try {
+      // Save invoice
+      await addDoc(collection(db, 'invoices'), invoiceData);
+      
+      // Update invoice counter
+      invoiceCounter++;
+      await setDoc(doc(db, 'counters', 'invoiceCounter'), { value: invoiceCounter });
+      
+      // Update van stock if operator
+      if (currentUser.email !== 'admin@campabeverages.com') {
+        await setDoc(doc(db, 'vanStock', currentUser.uid), {
+          stock: vanStock,
+          lastUpdated: serverTimestamp()
+        });
       }
-    } else {
-      saveInvoiceOffline(invoiceData);
+      
+      alert('Invoice saved successfully!');
+      resetInvoiceForm();
+    } catch (error) {
+      alert('Error saving invoice: ' + error.message);
     }
-  }
-
-  // Save invoice offline
-  function saveInvoiceOffline(invoiceData) {
-    offlineInvoices.push(invoiceData);
-    localStorage.setItem('offlineInvoices', JSON.stringify(offlineInvoices));
-    
-    // Update van stock locally
-    if (currentUser.email !== 'admin@campabeverages.com') {
-      localStorage.setItem(`vanStock_${currentUser.uid}`, JSON.stringify(vanStock));
-    }
-    
-    alert('Invoice saved offline. Will sync when connection is restored.');
-    resetInvoiceForm();
-  }
-
-  // Save draft invoice
-  function saveDraft() {
-    if (invoiceItems.length === 0) return alert('Add products to invoice before saving!');
-    
-    const dealerName = document.getElementById('dealerName').value;
-    if (!dealerName) return alert('Please enter dealer name!');
-    
-    const invoiceNo = document.getElementById('invoiceNo').textContent;
-    
-    const draftData = {
-      invoiceNo,
-      dealerName,
-      dealerAddress: document.getElementById('dealerAddress').value || '',
-      dealerGST: document.getElementById('dealerGST').value || '',
-      items: invoiceItems,
-      subtotal,
-      timestamp: new Date().toISOString()
-    };
-    
-    draftInvoices.push(draftData);
-    localStorage.setItem('draftInvoices', JSON.stringify(draftInvoices));
-    
-    alert('Draft saved successfully!');
-    resetInvoiceForm();
   }
 
   // Reset invoice form
@@ -847,68 +535,34 @@
     window.print();
   }
 
-  // Print from modal
-  function printInvoiceFromModal() {
-    const modal = document.getElementById('invoiceModal');
-    const printWindow = window.open('', '', 'width=800,height=600');
-    printWindow.document.write('<html><head><title>Invoice Print</title>');
-    printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">');
-    printWindow.document.write('<style>body { font-family: Arial; padding: 5px; font-size: 12px; }</style>');
-    printWindow.document.write('</head><body>');
-    printWindow.document.write(modal.querySelector('.modal-body').innerHTML);
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 500);
-  }
-
   // Van stock management functions
-  function requestStock() {
+  function addToVanStock() {
     const select = document.getElementById('stockProductSelect');
     const value = select.value;
-    const qty = parseInt(document.getElementById('stockQty').value) || 1;
+    const qty = parseInt(document.getElementById('stockQty').value);
     
-    if (!value) return alert('Please select a product.');
-    if (qty <= 0) return alert('Quantity must be greater than 0.');
+    if (!value || qty <= 0) return alert('Select a product and enter valid quantity.');
     
     const [name, size] = value.split('|');
+    const productKey = `${name}|${size}`;
     
-    const stockRequest = {
-      operatorId: currentUser.uid,
-      operatorEmail: currentUser.email,
-      product: { name, size },
-      quantity: qty,
-      timestamp: new Date(),
-      status: 'pending',
-      isOffline: !isOnline
-    };
-    
-    if (isOnline) {
-      try {
-        addDoc(collection(db, 'stockRequests'), stockRequest);
-        alert('Stock request submitted for admin approval');
-        loadPendingStockRequests();
-      } catch (error) {
-        // Fallback to offline
-        saveStockRequestOffline(stockRequest);
-      }
-    } else {
-      saveStockRequestOffline(stockRequest);
+    if (!vanStock[productKey]) {
+      vanStock[productKey] = {
+        name,
+        size,
+        loaded: 0,
+        sold: 0,
+        remaining: 0
+      };
     }
+    
+    vanStock[productKey].loaded += qty;
+    vanStock[productKey].remaining = vanStock[productKey].loaded - vanStock[productKey].sold;
+    
+    updateVanStockDisplay();
     
     // Clear inputs
     document.getElementById('stockQty').value = '';
-  }
-
-  // Save stock request offline
-  function saveStockRequestOffline(request) {
-    offlineStockRequests.push(request);
-    localStorage.setItem('offlineStockRequests', JSON.stringify(offlineStockRequests));
-    alert('Stock request saved offline. Will submit when connection is restored.');
-    loadPendingStockRequests();
   }
 
   // Update van stock display
@@ -917,7 +571,6 @@
     vanStockBody.innerHTML = '';
     
     let stockDisplay = '';
-    let totalStock = 0;
     
     for (const key in vanStock) {
       const item = vanStock[key];
@@ -933,54 +586,11 @@
       
       if (item.remaining > 0) {
         stockDisplay += `${item.name} (${item.size}): ${item.remaining}, `;
-        totalStock += item.remaining;
       }
     }
     
     document.getElementById('currentStockDisplay').textContent = 
       stockDisplay.length > 0 ? stockDisplay.slice(0, -2) : 'No stock available';
-    
-    // Update tab title with stock count
-    document.querySelector('[href="#stockTab"]').innerHTML = 
-      `Stock <span class="badge bg-primary">${totalStock}</span>`;
-  }
-
-  // Load pending stock requests for operator
-  async function loadPendingStockRequests() {
-    const pendingRequestsBody = document.getElementById('pendingRequestsBody');
-    pendingRequestsBody.innerHTML = '';
-    
-    // Check offline requests first
-    const allRequests = [...offlineStockRequests];
-    
-    if (isOnline) {
-      try {
-        const q = query(
-          collection(db, 'stockRequests'),
-          where('operatorId', '==', currentUser.uid),
-          orderBy('timestamp', 'desc')
-        );
-        
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach(doc => {
-          allRequests.push({ id: doc.id, ...doc.data() });
-        });
-      } catch (error) {
-        console.error("Error loading stock requests:", error);
-      }
-    }
-    
-    allRequests.forEach(request => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${request.product.name}</td>
-        <td>${request.product.size}</td>
-        <td>${request.quantity}</td>
-        <td>${new Date(request.timestamp).toLocaleDateString()}</td>
-        <td>${request.status} ${request.isOffline ? '(Offline)' : ''}</td>
-      `;
-      pendingRequestsBody.appendChild(row);
-    });
   }
 
   // Admin functions
@@ -995,20 +605,19 @@
       
       const querySnapshot = await getDocs(q);
       let html = '';
-      querySnapshot.forEach(doc => {
+      querySnapshot.forEach((doc) => {
         const invoice = doc.data();
         html += `
           <div class="card mb-2">
-            <div class="card-body p-2">
-              <h5 class="card-title mb-1">${invoice.invoiceNo}</h5>
-              <p class="card-text mb-1">
+            <div class="card-body">
+              <h5 class="card-title">${invoice.invoiceNo}</h5>
+              <p class="card-text">
                 <strong>Dealer:</strong> ${invoice.dealer.name}<br>
                 <strong>Amount:</strong> ₹${invoice.total.toFixed(2)}<br>
                 <strong>Operator:</strong> ${invoice.createdBy}
               </p>
               <button onclick="approveInvoice('${doc.id}')" class="btn btn-success btn-sm">Approve</button>
               <button onclick="rejectInvoice('${doc.id}')" class="btn btn-danger btn-sm">Reject</button>
-              <button onclick="viewInvoice('${doc.id}')" class="btn btn-primary btn-sm">View</button>
             </div>
           </div>
         `;
@@ -1021,61 +630,12 @@
     }
   }
 
-  async function loadPendingStockApprovals() {
-    try {
-      const q = query(
-        collection(db, 'stockRequests'),
-        where('status', '==', 'pending'),
-        orderBy('timestamp', 'desc')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      let html = '';
-      querySnapshot.forEach(doc => {
-        const request = doc.data();
-        html += `
-          <div class="card mb-2">
-            <div class="card-body p-2">
-              <h5 class="mb-1">${request.product.name} (${request.product.size})</h5>
-              <p class="mb-1">Operator: ${request.operatorEmail}</p>
-              <p class="mb-1">Qty: ${request.quantity}</p>
-              <button onclick="approveStockRequest('${doc.id}', '${request.operatorId}', 
-                '${request.product.name}', '${request.product.size}', ${request.quantity})" 
-                class="btn btn-success btn-sm">Approve</button>
-              <button onclick="rejectStockRequest('${doc.id}')" 
-                class="btn btn-danger btn-sm">Reject</button>
-            </div>
-          </div>
-        `;
-      });
-      
-      // Add offline requests
-      offlineStockRequests.forEach(request => {
-        html += `
-          <div class="card mb-2">
-            <div class="card-body p-2">
-              <h5 class="mb-1">${request.product.name} (${request.product.size})</h5>
-              <p class="mb-1">Operator: ${request.operatorEmail}</p>
-              <p class="mb-1">Qty: ${request.quantity}</p>
-              <p class="text-warning mb-1">Offline - Approve when online</p>
-            </div>
-          </div>
-        `;
-      });
-      
-      if (!html) html = '<p>No pending requests</p>';
-      document.getElementById('pendingStockApprovals').innerHTML = html;
-    } catch (error) {
-      console.error("Error loading stock requests:", error);
-    }
-  }
-
   async function loadVanOperatorsSummary() {
     try {
       const querySnapshot = await getDocs(collection(db, 'vanStock'));
-      let html = '<table class="table"><thead><tr><th>Operator</th><th>Products</th><th>Stock</th></tr></thead><tbody>';
+      let html = '<table class="table"><thead><tr><th>Operator</th><th>Products</th><th>Total Stock</th></tr></thead><tbody>';
       
-      querySnapshot.forEach(doc => {
+      querySnapshot.forEach((doc) => {
         const stock = doc.data().stock;
         let productCount = 0;
         let totalStock = 0;
@@ -1087,7 +647,7 @@
         
         html += `
           <tr>
-            <td>${doc.id.substring(0, 8)}...</td>
+            <td>${doc.id}</td>
             <td>${productCount}</td>
             <td>${totalStock}</td>
           </tr>
@@ -1111,15 +671,15 @@
       
       const querySnapshot = await getDocs(q);
       let html = '';
-      querySnapshot.forEach(doc => {
+      querySnapshot.forEach((doc) => {
         const invoice = doc.data();
         html += `
           <tr>
             <td>${invoice.invoiceNo}</td>
             <td>${invoice.invoiceDate.toDate().toLocaleDateString()}</td>
-            <td>${invoice.dealer.name.substring(0, 10)}...</td>
+            <td>${invoice.dealer.name}</td>
             <td>₹${invoice.total.toFixed(2)}</td>
-            <td>${invoice.createdBy.substring(0, 10)}...</td>
+            <td>${invoice.createdBy}</td>
             <td>${invoice.status}</td>
             <td>
               <button onclick="viewInvoice('${doc.id}')" class="btn btn-primary btn-sm">View</button>
@@ -1138,10 +698,9 @@
     try {
       await updateDoc(doc(db, 'invoices', invoiceId), {
         status: 'approved',
-        approvedAt: serverTimestamp(),
-        approvedBy: currentUser.email
+        approvedAt: serverTimestamp()
       });
-      alert('Invoice approved!');
+      alert('Invoice approved successfully!');
       loadPendingApprovals();
       loadRecentInvoices();
     } catch (error) {
@@ -1153,8 +712,7 @@
     try {
       await updateDoc(doc(db, 'invoices', invoiceId), {
         status: 'rejected',
-        rejectedAt: serverTimestamp(),
-        rejectedBy: currentUser.email
+        rejectedAt: serverTimestamp()
       });
       alert('Invoice rejected!');
       loadPendingApprovals();
@@ -1164,187 +722,10 @@
     }
   }
 
-  async function approveStockRequest(requestId, operatorId, productName, productSize, quantity) {
-    try {
-      // Update request status
-      await updateDoc(doc(db, 'stockRequests', requestId), {
-        status: 'approved',
-        approvedAt: serverTimestamp(),
-        approvedBy: currentUser.email
-      });
-      
-      // Update van stock
-      const productKey = `${productName}|${productSize}`;
-      const vanStockRef = doc(db, 'vanStock', operatorId);
-      const vanStockDoc = await getDoc(vanStockRef);
-      
-      let stockData = vanStockDoc.exists() ? vanStockDoc.data().stock : {};
-      
-      if (!stockData[productKey]) {
-        stockData[productKey] = {
-          name: productName,
-          size: productSize,
-          loaded: 0,
-          sold: 0,
-          remaining: 0
-        };
-      }
-      
-      stockData[productKey].loaded += quantity;
-      stockData[productKey].remaining += quantity;
-      
-      await setDoc(vanStockRef, { 
-        stock: stockData,
-        lastUpdated: serverTimestamp()
-      });
-      
-      alert('Stock request approved!');
-      loadPendingStockApprovals();
-    } catch (error) {
-      alert('Error approving stock request: ' + error.message);
-    }
-  }
-
-  async function rejectStockRequest(requestId) {
-    try {
-      await updateDoc(doc(db, 'stockRequests', requestId), {
-        status: 'rejected',
-        rejectedAt: serverTimestamp(),
-        rejectedBy: currentUser.email
-      });
-      alert('Stock request rejected!');
-      loadPendingStockApprovals();
-    } catch (error) {
-      alert('Error rejecting stock request: ' + error.message);
-    }
-  }
-
-  async function viewInvoice(invoiceId) {
-    try {
-      const docRef = doc(db, 'invoices', invoiceId);
-      const docSnap = await getDoc(docRef);
-      
-      if (docSnap.exists()) {
-        const invoice = docSnap.data();
-        let itemsHTML = '';
-        
-        invoice.items.forEach(item => {
-          itemsHTML += `
-            <tr>
-              <td>${item.name}</td>
-              <td>${item.size}</td>
-              <td>${item.qty}</td>
-              <td>₹${item.rate.toFixed(2)}</td>
-              <td>₹${item.amount.toFixed(2)}</td>
-            </tr>
-          `;
-        });
-        
-        const modalBody = `
-          <div class="company-header">
-            <h2>Campa Beverages Pvt. Ltd.</h2>
-            <p><strong>Invoice No:</strong> ${invoice.invoiceNo}</p>
-            <p><strong>Date:</strong> ${invoice.invoiceDate.toDate().toLocaleDateString()}</p>
-            <p><strong>Status:</strong> ${invoice.status}</p>
-            <p><strong>Operator:</strong> ${invoice.createdBy}</p>
-          </div>
-          
-          <div class="mt-2">
-            <h4>Dealer Information</h4>
-            <p><strong>Name:</strong> ${invoice.dealer.name}</p>
-            <p><strong>Address:</strong> ${invoice.dealer.address || 'N/A'}</p>
-            <p><strong>GSTIN:</strong> ${invoice.dealer.gstin || 'N/A'}</p>
-          </div>
-          
-          <div style="overflow-x: auto;">
-            <table class="table-bordered mt-2">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Size</th>
-                  <th>Qty</th>
-                  <th>Rate</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody>${itemsHTML}</tbody>
-            </table>
-          </div>
-          
-          <div class="right mt-2">
-            <h4>Subtotal: ₹${invoice.subtotal.toFixed(2)}</h4>
-            <h4>GST (18%): ₹${invoice.gst.toFixed(2)}</h4>
-            <h3>Total: ₹${invoice.total.toFixed(2)}</h3>
-          </div>
-        `;
-        
-        document.getElementById('invoiceModalBody').innerHTML = modalBody;
-        
-        // Add approval buttons if pending
-        const approvalButtons = document.getElementById('approvalButtons');
-        if (invoice.status === 'pending') {
-          approvalButtons.innerHTML = `
-            <button onclick="approveInvoice('${invoiceId}')" class="btn btn-success btn-sm">Approve</button>
-            <button onclick="rejectInvoice('${invoiceId}')" class="btn btn-danger btn-sm">Reject</button>
-          `;
-        } else {
-          approvalButtons.innerHTML = '';
-        }
-        
-        const modal = new bootstrap.Modal(document.getElementById('invoiceModal'));
-        modal.show();
-      }
-    } catch (error) {
-      alert('Error loading invoice: ' + error.message);
-    }
-  }
-
-  // Export invoices
-  function exportInvoices(format) {
-    try {
-      const table = document.getElementById('invoicesList');
-      const rows = table.querySelectorAll('tr');
-      
-      const data = [];
-      const headers = ['Invoice No', 'Date', 'Dealer', 'Amount', 'Operator', 'Status'];
-      data.push(headers);
-      
-      rows.forEach(row => {
-        const cols = row.querySelectorAll('td');
-        if (cols.length > 0) {
-          const rowData = [
-            cols[0].innerText,
-            cols[1].innerText,
-            cols[2].innerText,
-            cols[3].innerText,
-            cols[4].innerText,
-            cols[5].innerText
-          ];
-          data.push(rowData);
-        }
-      });
-      
-      if (format === 'csv') {
-        let csv = '';
-        data.forEach(row => {
-          csv += row.join(',') + '\n';
-        });
-        
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'campa_invoices.csv';
-        a.click();
-      } else if (format === 'excel') {
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.aoa_to_sheet(data);
-        XLSX.utils.book_append_sheet(wb, ws, 'Invoices');
-        XLSX.writeFile(wb, 'campa_invoices.xlsx');
-      }
-    } catch (error) {
-      alert('Error exporting invoices: ' + error.message);
-    }
+  function viewInvoice(invoiceId) {
+    // Implement detailed invoice view
+    alert('Viewing invoice ' + invoiceId);
+    // You can implement a modal or new page to show complete invoice details
   }
 
   // Expose functions to global scope
@@ -1354,15 +735,10 @@
   window.removeItem = removeItem;
   window.saveInvoice = saveInvoice;
   window.printInvoice = printInvoice;
-  window.saveDraft = saveDraft;
-  window.requestStock = requestStock;
+  window.addToVanStock = addToVanStock;
   window.approveInvoice = approveInvoice;
   window.rejectInvoice = rejectInvoice;
-  window.approveStockRequest = approveStockRequest;
-  window.rejectStockRequest = rejectStockRequest;
   window.viewInvoice = viewInvoice;
-  window.printInvoiceFromModal = printInvoiceFromModal;
-  window.exportInvoices = exportInvoices;
 
   // Initialize the app when page loads
   window.onload = initApp;
