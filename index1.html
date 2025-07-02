@@ -44,6 +44,7 @@
     .btn-success { background: green; }
     .btn-danger { background: red; }
     .btn-warning { background: #ffc107; }
+    .btn-info { background: #17a2b8; }
     .right { text-align: right; }
     .signature { margin-top: 20px; }
     .company-header { 
@@ -101,6 +102,10 @@
     h2 { font-size: 18px; }
     h3 { font-size: 16px; }
     h4 { font-size: 14px; }
+    .badge {
+      font-size: 10px;
+      padding: 3px 5px;
+    }
     
     /* Mobile-specific styles */
     @media (max-width: 576px) {
@@ -359,6 +364,30 @@
         </div>
       </div>
       
+      <div class="card mb-2">
+        <div class="card-header bg-info text-white py-2">
+          Sales Analytics
+        </div>
+        <div class="card-body p-2">
+          <div class="row">
+            <div class="col-md-6">
+              <select id="analyticsPeriod" class="form-select mb-2">
+                <option value="day">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <select id="analyticsOperator" class="form-select mb-2">
+                <option value="all">All Operators</option>
+              </select>
+            </div>
+          </div>
+          <div id="salesAnalyticsChart"></div>
+          <div id="salesAnalyticsTable" class="mt-3"></div>
+        </div>
+      </div>
+      
       <h4>Recent Invoices</h4>
       <div class="mb-2">
         <button class="btn btn-secondary btn-sm" onclick="exportInvoices('csv')">CSV</button>
@@ -412,7 +441,8 @@
     orderBy,
     limit,
     getDocs,
-    serverTimestamp
+    serverTimestamp,
+    onSnapshot
   } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
   // Your Firebase configuration
@@ -591,6 +621,26 @@
     
     // Generate invoice number
     generateInvoiceNo();
+    
+    // Setup real-time listeners
+    setupRealTimeListeners();
+  }
+
+  // Setup real-time listeners
+  function setupRealTimeListeners() {
+    if (currentUser.email === 'admin@campabeverages.com') {
+      // Invoices
+      onSnapshot(query(collection(db, 'invoices'), where('status', '==', 'pending')), 
+        () => loadPendingApprovals());
+        
+      // Stock requests
+      onSnapshot(query(collection(db, 'stockRequests'), where('status', '==', 'pending')), 
+        () => loadPendingStockApprovals());
+        
+      // Sales data
+      onSnapshot(collection(db, 'invoices'), 
+        () => loadSalesAnalytics());
+    }
   }
 
   // Load operator-specific data
@@ -619,6 +669,7 @@
     loadPendingStockApprovals();
     loadVanOperatorsSummary();
     loadRecentInvoices();
+    loadSalesAnalytics();
   }
 
   // Generate invoice number
@@ -918,6 +969,7 @@
     
     let stockDisplay = '';
     let totalStock = 0;
+    let lowStockCount = 0;
     
     for (const key in vanStock) {
       const item = vanStock[key];
@@ -934,11 +986,44 @@
       if (item.remaining > 0) {
         stockDisplay += `${item.name} (${item.size}): ${item.remaining}, `;
         totalStock += item.remaining;
+        
+        if (item.remaining < 5) {
+          lowStockCount++;
+        }
       }
     }
     
-    document.getElementById('currentStockDisplay').textContent = 
-      stockDisplay.length > 0 ? stockDisplay.slice(0, -2) : 'No stock available';
+    const summaryHTML = `
+      <div class="row text-center mb-2">
+        <div class="col-md-4">
+          <div class="card bg-light">
+            <div class="card-body p-2">
+              <h6>Total Products</h6>
+              <h4>${Object.keys(vanStock).length}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-light">
+            <div class="card-body p-2">
+              <h6>Total Stock</h6>
+              <h4>${totalStock}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-light">
+            <div class="card-body p-2">
+              <h6>Low Stock (<5)</h6>
+              <h4>${lowStockCount}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.getElementById('currentStockDisplay').innerHTML = 
+      summaryHTML + (stockDisplay.length > 0 ? stockDisplay.slice(0, -2) : 'No stock available');
     
     // Update tab title with stock count
     document.querySelector('[href="#stockTab"]').innerHTML = 
@@ -1023,41 +1108,43 @@
 
   async function loadPendingStockApprovals() {
     try {
-      const q = query(
-        collection(db, 'stockRequests'),
-        where('status', '==', 'pending'),
-        orderBy('timestamp', 'desc')
-      );
+      let allRequests = [];
       
-      const querySnapshot = await getDocs(q);
-      let html = '';
-      querySnapshot.forEach(doc => {
-        const request = doc.data();
-        html += `
-          <div class="card mb-2">
-            <div class="card-body p-2">
-              <h5 class="mb-1">${request.product.name} (${request.product.size})</h5>
-              <p class="mb-1">Operator: ${request.operatorEmail}</p>
-              <p class="mb-1">Qty: ${request.quantity}</p>
-              <button onclick="approveStockRequest('${doc.id}', '${request.operatorId}', 
-                '${request.product.name}', '${request.product.size}', ${request.quantity})" 
-                class="btn btn-success btn-sm">Approve</button>
-              <button onclick="rejectStockRequest('${doc.id}')" 
-                class="btn btn-danger btn-sm">Reject</button>
-            </div>
-          </div>
-        `;
-      });
+      // Get online requests
+      if (isOnline) {
+        const q = query(
+          collection(db, 'stockRequests'),
+          where('status', '==', 'pending'),
+          orderBy('timestamp', 'desc')
+        );
+        
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(doc => {
+          allRequests.push({ id: doc.id, ...doc.data() });
+        });
+      }
       
       // Add offline requests
-      offlineStockRequests.forEach(request => {
+      allRequests = allRequests.concat(offlineStockRequests);
+      
+      let html = '';
+      allRequests.forEach(request => {
+        const isOffline = request.isOffline || false;
+        const requestId = request.id || 'offline-' + Math.random().toString(36).substr(2, 9);
+        
         html += `
           <div class="card mb-2">
             <div class="card-body p-2">
               <h5 class="mb-1">${request.product.name} (${request.product.size})</h5>
               <p class="mb-1">Operator: ${request.operatorEmail}</p>
               <p class="mb-1">Qty: ${request.quantity}</p>
-              <p class="text-warning mb-1">Offline - Approve when online</p>
+              <p class="mb-1">Date: ${new Date(request.timestamp).toLocaleDateString()}</p>
+              ${isOffline ? '<p class="text-warning mb-1">Offline Request</p>' : ''}
+              <button onclick="approveStockRequest('${requestId}', '${request.operatorId}', 
+                '${request.product.name}', '${request.product.size}', ${request.quantity}, ${isOffline})" 
+                class="btn btn-success btn-sm">Approve</button>
+              <button onclick="rejectStockRequest('${requestId}', ${isOffline})" 
+                class="btn btn-danger btn-sm">Reject</button>
             </div>
           </div>
         `;
@@ -1134,6 +1221,106 @@
     }
   }
 
+  async function loadSalesAnalytics() {
+    try {
+      // Load operators for filter
+      const operatorsSnapshot = await getDocs(collection(db, 'vanStock'));
+      const operatorSelect = document.getElementById('analyticsOperator');
+      operatorSelect.innerHTML = '<option value="all">All Operators</option>';
+      
+      operatorsSnapshot.forEach(doc => {
+        const email = doc.id; // or store email in vanStock doc
+        operatorSelect.innerHTML += `<option value="${email}">${email.substring(0, 8)}...</option>`;
+      });
+      
+      // Load sales data
+      const period = document.getElementById('analyticsPeriod').value;
+      const operatorFilter = document.getElementById('analyticsOperator').value;
+      
+      let startDate = new Date();
+      if (period === 'week') {
+        startDate.setDate(startDate.getDate() - 7);
+      } else if (period === 'month') {
+        startDate.setMonth(startDate.getMonth() - 1);
+      } else {
+        startDate.setHours(0, 0, 0, 0);
+      }
+      
+      let q = query(
+        collection(db, 'invoices'),
+        where('createdAt', '>=', startDate),
+        where('status', '==', 'approved')
+      );
+      
+      if (operatorFilter !== 'all') {
+        q = query(q, where('createdBy', '==', operatorFilter));
+      }
+      
+      const querySnapshot = await getDocs(q);
+      
+      // Process sales data
+      const salesByProduct = {};
+      let totalSales = 0;
+      
+      querySnapshot.forEach(doc => {
+        const invoice = doc.data();
+        totalSales += invoice.total;
+        
+        invoice.items.forEach(item => {
+          const productKey = `${item.name}|${item.size}`;
+          if (!salesByProduct[productKey]) {
+            salesByProduct[productKey] = {
+              name: item.name,
+              size: item.size,
+              quantity: 0,
+              amount: 0
+            };
+          }
+          salesByProduct[productKey].quantity += item.qty;
+          salesByProduct[productKey].amount += item.amount;
+        });
+      });
+      
+      // Display results
+      let chartHTML = '<div class="alert alert-primary">';
+      chartHTML += `<strong>Total Sales:</strong> ₹${totalSales.toFixed(2)}`;
+      chartHTML += '</div>';
+      
+      let tableHTML = `
+        <table class="table-bordered">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Size</th>
+              <th>Qty Sold</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      for (const key in salesByProduct) {
+        const product = salesByProduct[key];
+        tableHTML += `
+          <tr>
+            <td>${product.name}</td>
+            <td>${product.size}</td>
+            <td>${product.quantity}</td>
+            <td>₹${product.amount.toFixed(2)}</td>
+          </tr>
+        `;
+      }
+      
+      tableHTML += '</tbody></table>';
+      
+      document.getElementById('salesAnalyticsChart').innerHTML = chartHTML;
+      document.getElementById('salesAnalyticsTable').innerHTML = tableHTML;
+      
+    } catch (error) {
+      console.error("Error loading sales analytics:", error);
+    }
+  }
+
   async function approveInvoice(invoiceId) {
     try {
       await updateDoc(doc(db, 'invoices', invoiceId), {
@@ -1144,6 +1331,7 @@
       alert('Invoice approved!');
       loadPendingApprovals();
       loadRecentInvoices();
+      loadSalesAnalytics();
     } catch (error) {
       alert('Error approving invoice: ' + error.message);
     }
@@ -1164,14 +1352,28 @@
     }
   }
 
-  async function approveStockRequest(requestId, operatorId, productName, productSize, quantity) {
+  async function approveStockRequest(requestId, operatorId, productName, productSize, quantity, isOffline) {
     try {
-      // Update request status
-      await updateDoc(doc(db, 'stockRequests', requestId), {
-        status: 'approved',
-        approvedAt: serverTimestamp(),
-        approvedBy: currentUser.email
-      });
+      if (!isOffline) {
+        // Update request status in Firestore
+        await updateDoc(doc(db, 'stockRequests', requestId), {
+            status: 'approved',
+            approvedAt: serverTimestamp(),
+            approvedBy: currentUser.email
+        });
+      } else {
+        // Remove from offline requests
+        const index = offlineStockRequests.findIndex(req => 
+            req.operatorId === operatorId && 
+            req.product.name === productName && 
+            req.product.size === productSize &&
+            req.quantity === quantity
+        );
+        if (index !== -1) {
+            offlineStockRequests.splice(index, 1);
+            localStorage.setItem('offlineStockRequests', JSON.stringify(offlineStockRequests));
+        }
+      }
       
       // Update van stock
       const productKey = `${productName}|${productSize}`;
@@ -1205,13 +1407,23 @@
     }
   }
 
-  async function rejectStockRequest(requestId) {
+  async function rejectStockRequest(requestId, isOffline) {
     try {
-      await updateDoc(doc(db, 'stockRequests', requestId), {
-        status: 'rejected',
-        rejectedAt: serverTimestamp(),
-        rejectedBy: currentUser.email
-      });
+      if (!isOffline) {
+        await updateDoc(doc(db, 'stockRequests', requestId), {
+          status: 'rejected',
+          rejectedAt: serverTimestamp(),
+          rejectedBy: currentUser.email
+        });
+      } else {
+        // Remove from offline requests
+        const index = offlineStockRequests.findIndex(req => req.id === requestId);
+        if (index !== -1) {
+          offlineStockRequests.splice(index, 1);
+          localStorage.setItem('offlineStockRequests', JSON.stringify(offlineStockRequests));
+        }
+      }
+      
       alert('Stock request rejected!');
       loadPendingStockApprovals();
     } catch (error) {
