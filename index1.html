@@ -371,14 +371,14 @@
         <div class="card-body p-2">
           <div class="row">
             <div class="col-md-6">
-              <select id="analyticsPeriod" class="form-select mb-2">
+              <select id="analyticsPeriod" class="form-select mb-2" onchange="loadSalesAnalytics()">
                 <option value="day">Today</option>
                 <option value="week">This Week</option>
                 <option value="month">This Month</option>
               </select>
             </div>
             <div class="col-md-6">
-              <select id="analyticsOperator" class="form-select mb-2">
+              <select id="analyticsOperator" class="form-select mb-2" onchange="loadSalesAnalytics()">
                 <option value="all">All Operators</option>
               </select>
             </div>
@@ -523,29 +523,37 @@
     if (!currentUser) return;
     
     // Sync offline invoices
-    while (offlineInvoices.length > 0) {
-      const invoice = offlineInvoices[0];
-      try {
+    try {
+      while (offlineInvoices.length > 0) {
+        const invoice = offlineInvoices[0];
+        if (!invoice || !invoice.invoiceNo) {
+          offlineInvoices.shift();
+          continue;
+        }
+        
         await addDoc(collection(db, 'invoices'), invoice);
         offlineInvoices.shift();
         localStorage.setItem('offlineInvoices', JSON.stringify(offlineInvoices));
-      } catch (error) {
-        console.error("Error syncing offline invoice:", error);
-        break;
       }
+    } catch (error) {
+      console.error("Error syncing offline invoices:", error);
     }
     
     // Sync stock requests
-    while (offlineStockRequests.length > 0) {
-      const request = offlineStockRequests[0];
-      try {
+    try {
+      while (offlineStockRequests.length > 0) {
+        const request = offlineStockRequests[0];
+        if (!request || !request.operatorId) {
+          offlineStockRequests.shift();
+          continue;
+        }
+        
         await addDoc(collection(db, 'stockRequests'), request);
         offlineStockRequests.shift();
         localStorage.setItem('offlineStockRequests', JSON.stringify(offlineStockRequests));
-      } catch (error) {
-        console.error("Error syncing stock request:", error);
-        break;
       }
+    } catch (error) {
+      console.error("Error syncing stock requests:", error);
     }
     
     // Reload data after sync
@@ -584,8 +592,16 @@
 
   // Login function
   async function login() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    
+    if (!email || !password) {
+      return alert('Please enter both email and password');
+    }
+    
+    if (!email.includes('@')) {
+      return alert('Please enter a valid email address');
+    }
     
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -630,16 +646,16 @@
   function setupRealTimeListeners() {
     if (currentUser.email === 'admin@campabeverages.com') {
       // Invoices
-      onSnapshot(query(collection(db, 'invoices'), where('status', '==', 'pending')), 
-        () => loadPendingApprovals());
+      onSnapshot(query(collection(db, 'invoices'), 
+        () => {
+          loadPendingApprovals();
+          loadRecentInvoices();
+          loadSalesAnalytics();
+        });
         
       // Stock requests
-      onSnapshot(query(collection(db, 'stockRequests'), where('status', '==', 'pending')), 
+      onSnapshot(query(collection(db, 'stockRequests')), 
         () => loadPendingStockApprovals());
-        
-      // Sales data
-      onSnapshot(collection(db, 'invoices'), 
-        () => loadSalesAnalytics());
     }
   }
 
@@ -648,18 +664,25 @@
     // Set van operator name
     document.getElementById('vanOperatorName').textContent = currentUser.email.split('@')[0];
     
-    // Load van stock
+    // Initialize vanStock object
+    vanStock = {};
+    
     try {
       const vanStockDoc = await getDoc(doc(db, 'vanStock', currentUser.uid));
       if (vanStockDoc.exists()) {
         vanStock = vanStockDoc.data().stock || {};
-        updateVanStockDisplay();
+      } else {
+        // Initialize empty stock for new operator
+        await setDoc(doc(db, 'vanStock', currentUser.uid), {
+          stock: {},
+          lastUpdated: serverTimestamp()
+        });
       }
+      updateVanStockDisplay();
     } catch (error) {
       console.error("Error loading van stock:", error);
     }
     
-    // Load pending stock requests
     loadPendingStockRequests();
   }
 
@@ -678,9 +701,14 @@
       const counterDoc = await getDoc(doc(db, 'counters', 'invoiceCounter'));
       if (counterDoc.exists()) {
         invoiceCounter = counterDoc.data().value;
+      } else {
+        // Initialize counter if it doesn't exist
+        await setDoc(doc(db, 'counters', 'invoiceCounter'), { value: 0 });
+        invoiceCounter = 0;
       }
     } catch (error) {
       console.error("Error loading invoice counter:", error);
+      invoiceCounter = 0;
     }
     
     const now = new Date();
@@ -703,7 +731,16 @@
     
     // Check stock if operator
     if (currentUser.email !== 'admin@campabeverages.com') {
-      if (!vanStock[productKey] || vanStock[productKey].remaining < qty) {
+      if (!vanStock[productKey]) {
+        vanStock[productKey] = {
+          name: name,
+          size: size,
+          loaded: 0,
+          sold: 0,
+          remaining: 0
+        };
+      }
+      if (vanStock[productKey].remaining < qty) {
         return alert('Not enough stock in van for this product!');
       }
     }
@@ -784,7 +821,7 @@
   async function saveInvoice() {
     if (invoiceItems.length === 0) return alert('Add products to invoice before saving!');
     
-    const dealerName = document.getElementById('dealerName').value;
+    const dealerName = document.getElementById('dealerName').value.trim();
     if (!dealerName) return alert('Please enter dealer name!');
     
     const invoiceNo = document.getElementById('invoiceNo').textContent;
@@ -798,8 +835,8 @@
       invoiceDate: new Date(),
       dealer: {
         name: dealerName,
-        address: document.getElementById('dealerAddress').value || '',
-        gstin: document.getElementById('dealerGST').value || ''
+        address: document.getElementById('dealerAddress').value.trim() || '',
+        gstin: document.getElementById('dealerGST').value.trim() || ''
       },
       items: invoiceItems,
       subtotal,
@@ -831,6 +868,7 @@
         alert('Invoice saved successfully!');
         resetInvoiceForm();
       } catch (error) {
+        console.error("Error saving invoice:", error);
         // Fallback to offline
         saveInvoiceOffline(invoiceData);
       }
@@ -857,7 +895,7 @@
   function saveDraft() {
     if (invoiceItems.length === 0) return alert('Add products to invoice before saving!');
     
-    const dealerName = document.getElementById('dealerName').value;
+    const dealerName = document.getElementById('dealerName').value.trim();
     if (!dealerName) return alert('Please enter dealer name!');
     
     const invoiceNo = document.getElementById('invoiceNo').textContent;
@@ -865,8 +903,8 @@
     const draftData = {
       invoiceNo,
       dealerName,
-      dealerAddress: document.getElementById('dealerAddress').value || '',
-      dealerGST: document.getElementById('dealerGST').value || '',
+      dealerAddress: document.getElementById('dealerAddress').value.trim() || '',
+      dealerGST: document.getElementById('dealerGST').value.trim() || '',
       items: invoiceItems,
       subtotal,
       timestamp: new Date().toISOString()
@@ -902,18 +940,40 @@
   function printInvoiceFromModal() {
     const modal = document.getElementById('invoiceModal');
     const printWindow = window.open('', '', 'width=800,height=600');
-    printWindow.document.write('<html><head><title>Invoice Print</title>');
-    printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">');
-    printWindow.document.write('<style>body { font-family: Arial; padding: 5px; font-size: 12px; }</style>');
-    printWindow.document.write('</head><body>');
-    printWindow.document.write(modal.querySelector('.modal-body').innerHTML);
-    printWindow.document.write('</body></html>');
+    
+    // Clone the modal content to avoid modifying the original
+    const content = modal.querySelector('.modal-body').cloneNode(true);
+    
+    // Remove any buttons from the print view
+    const buttons = content.querySelectorAll('button');
+    buttons.forEach(btn => btn.remove());
+    
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Invoice Print</title>
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+          <style>
+            body { font-family: Arial; padding: 20px; font-size: 14px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ddd; padding: 8px; }
+            .right { text-align: right; }
+          </style>
+        </head>
+        <body>
+          ${content.innerHTML}
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+                window.close();
+              }, 200);
+            };
+          </script>
+        </body>
+      </html>
+    `);
     printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 500);
   }
 
   // Van stock management functions
@@ -943,6 +1003,7 @@
         alert('Stock request submitted for admin approval');
         loadPendingStockRequests();
       } catch (error) {
+        console.error("Error submitting stock request:", error);
         // Fallback to offline
         saveStockRequestOffline(stockRequest);
       }
@@ -1575,9 +1636,10 @@
   window.viewInvoice = viewInvoice;
   window.printInvoiceFromModal = printInvoiceFromModal;
   window.exportInvoices = exportInvoices;
+  window.loadSalesAnalytics = loadSalesAnalytics;
 
   // Initialize the app when page loads
   window.onload = initApp;
 </script>
 </body>
-</html> 
+</html>
