@@ -438,8 +438,8 @@
   let vanStock = {};
   let invoiceCounter = 0;
   let isOnline = navigator.onLine;
-  const offlineInvoices = JSON.parse(localStorage.getItem('offlineInvoices') || [];
-  const offlineStockRequests = JSON.parse(localStorage.getItem('offlineStockRequests') || []);
+  const offlineInvoices = JSON.parse(localStorage.getItem('offlineInvoices')) || [];
+  const offlineStockRequests = JSON.parse(localStorage.getItem('offlineStockRequests')) || [];
   const draftInvoices = JSON.parse(localStorage.getItem('draftInvoices')) || [];
 
   // Initialize the app
