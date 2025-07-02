@@ -113,7 +113,7 @@
           return db.collection('users').doc(userCredential.user.uid).get();
         })
         .then((doc) => {
-          if (doc.exists && doc.data().role === 'admin') {
+          if (doc.exists && doc.data().role === 'admin@cola.com') {
             // Redirect to admin dashboard
             window.location.href = 'admin.html';
           } else {
