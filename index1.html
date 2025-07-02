@@ -2,24 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Campa Beverages - Inventory & Invoice System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { font-family: Arial; padding: 20px; max-width: 1200px; margin: auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background-color: #f4f4f4; }
-    .btn { padding: 8px 12px; color: white; border: none; cursor: pointer; }
+    body { 
+      font-family: Arial; 
+      padding: 10px; 
+      max-width: 100%; 
+      margin: auto; 
+      font-size: 14px; 
+    }
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-top: 10px; 
+      font-size: 12px;
+    }
+    th, td { 
+      border: 1px solid #ccc; 
+      padding: 6px; 
+      text-align: center; 
+    }
+    th { 
+      background-color: #f4f4f4; 
+      font-size: 12px;
+    }
+    .btn { 
+      padding: 6px 10px; 
+      font-size: 12px;
+      color: white; 
+      border: none; 
+      cursor: pointer; 
+      margin: 2px 0;
+    }
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 11px;
+    }
     .btn-primary { background: #007bff; }
     .btn-success { background: green; }
     .btn-danger { background: red; }
     .btn-warning { background: #ffc107; }
     .right { text-align: right; }
-    .signature { margin-top: 40px; }
-    .company-header { background-color: #f8f9fa; padding: 20px; border-radius: 5px; }
-    .login-container { max-width: 400px; margin: 50px auto; }
+    .signature { margin-top: 20px; }
+    .company-header { 
+      background-color: #f8f9fa; 
+      padding: 10px; 
+      border-radius: 5px;
+      font-size: 12px;
+    }
+    .login-container { 
+      max-width: 100%; 
+      margin: 20px auto;
+      padding: 0 10px;
+    }
     .hidden { display: none; }
-    .nav-tabs { margin-bottom: 20px; }
+    .nav-tabs { 
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .nav-link {
+      padding: 8px 12px;
+    }
     .offline-banner { 
       position: fixed; 
       top: 0; 
@@ -27,11 +72,80 @@
       right: 0; 
       background: #ffc107; 
       color: #000; 
-      padding: 10px; 
+      padding: 8px; 
       text-align: center;
       z-index: 1000;
+      font-size: 12px;
     }
-    .modal-lg { max-width: 90%; }
+    .modal-lg { max-width: 95%; }
+    .form-control, .form-select {
+      padding: 6px;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .input-group {
+      margin-bottom: 6px;
+    }
+    .card {
+      margin-bottom: 10px;
+    }
+    .card-body {
+      padding: 10px;
+    }
+    .card-title {
+      font-size: 14px;
+    }
+    .card-text {
+      font-size: 12px;
+    }
+    h2 { font-size: 18px; }
+    h3 { font-size: 16px; }
+    h4 { font-size: 14px; }
+    
+    /* Mobile-specific styles */
+    @media (max-width: 576px) {
+      .nav-tabs .nav-item {
+        width: 33.33%;
+        text-align: center;
+      }
+      .nav-link {
+        padding: 8px 4px;
+        font-size: 11px;
+      }
+      .company-header {
+        padding: 8px;
+      }
+      .tab-content {
+        padding: 5px;
+      }
+      .row {
+        margin-left: -5px;
+        margin-right: -5px;
+      }
+      .col-md-6, .col-md-4, .col-md-2 {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      #invoiceBody td, #invoiceBody th {
+        padding: 4px;
+      }
+      .btn {
+        width: 100%;
+        margin-bottom: 5px;
+      }
+      .modal-body {
+        padding: 10px;
+      }
+    }
+    
+    /* Print styles */
+    @media print {
+      body { padding: 0; font-size: 12px; }
+      .nav-tabs, .btn, #offlineBanner { display: none !important; }
+      .company-header { padding: 5px; }
+      table { font-size: 10px; }
+      th, td { padding: 3px; }
+    }
   </style>
 </head>
 <body>
@@ -41,10 +155,10 @@
 </div>
 
 <div id="loginPage" class="login-container">
-  <h2 class="text-center mb-4">Campa Beverages Login</h2>
+  <h2 class="text-center mb-3">Campa Beverages Login</h2>
   <div class="card">
     <div class="card-body">
-      <div class="mb-3">
+      <div class="mb-2">
         <label for="loginEmail" class="form-label">Email</label>
         <input type="email" class="form-control" id="loginEmail" placeholder="operator@campa.com">
       </div>
@@ -60,216 +174,212 @@
 <div id="appContainer" class="hidden">
   <ul class="nav nav-tabs" id="myTab">
     <li class="nav-item">
-      <a class="nav-link active" data-bs-toggle="tab" href="#invoiceTab">Invoice Generator</a>
+      <a class="nav-link active" data-bs-toggle="tab" href="#invoiceTab">Invoices</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="tab" href="#stockTab">Van Stock Management</a>
+      <a class="nav-link" data-bs-toggle="tab" href="#stockTab">Stock</a>
     </li>
     <li class="nav-item" id="adminTabItem">
-      <a class="nav-link" data-bs-toggle="tab" href="#adminTab">Admin Dashboard</a>
+      <a class="nav-link" data-bs-toggle="tab" href="#adminTab">Admin</a>
     </li>
     <li class="nav-item ml-auto">
-      <button onclick="logout()" class="btn btn-danger">Logout</button>
+      <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
     </li>
   </ul>
 
   <div class="tab-content">
-    <!-- Invoice Generator Tab -->
+    <!-- Invoice Generator Tab (Mobile Optimized) -->
     <div class="tab-pane fade show active" id="invoiceTab">
       <div class="company-header">
         <h2>Campa Beverages Pvt. Ltd.</h2>
-        <p>123 Beverage Street, Hyderabad, Telangana - 500001</p>
-        <p><strong>GSTIN:</strong> 37XXXXXXXXXX | <strong>Phone:</strong> 040-12345678 | <strong>Email:</strong> info@campabeverages.com</p>
-        <p><strong>Invoice No:</strong> <span id="invoiceNo"></span> | <strong>Date:</strong> <span id="invoiceDate"></span></p>
+        <p><strong>Invoice No:</strong> <span id="invoiceNo"></span></p>
+        <p><strong>Date:</strong> <span id="invoiceDate"></span></p>
       </div>
 
-      <hr>
-
-      <div class="row mb-3">
+      <div class="row mb-2">
         <div class="col-md-6">
-          <h4>Dealer Information</h4>
-          <input type="text" id="dealerName" class="form-control mb-2" placeholder="Dealer Name" required>
-          <input type="text" id="dealerAddress" class="form-control mb-2" placeholder="Dealer Address">
-          <input type="text" id="dealerGST" class="form-control mb-2" placeholder="Dealer GSTIN">
+          <h4>Dealer Info</h4>
+          <input type="text" id="dealerName" class="form-control mb-1" placeholder="Dealer Name" required>
+          <input type="text" id="dealerAddress" class="form-control mb-1" placeholder="Address">
+          <input type="text" id="dealerGST" class="form-control mb-1" placeholder="GSTIN">
         </div>
         <div class="col-md-6">
           <h4>Add Product</h4>
-          <select id="productSelect" class="form-select mb-2">
-            <option value="">-- Select Product --</option>
+          <select id="productSelect" class="form-select mb-1">
+            <option value="">-- Select --</option>
             <option value="Campa Cola|600 ml|28">Campa Cola - 600 ml</option>
             <option value="Campa Orange|600 ml|28">Campa Orange - 600 ml</option>
             <option value="Campa Lemon|600 ml|28">Campa Lemon - 600 ml</option>
-            <option value="Campa Cloudy Lemon|600 ml|30">Campa Cloudy Lemon - 600 ml</option>
-            <option value="Power-Up Cola|500 ml|32">Power-Up Cola - 500 ml</option>
+            <option value="Campa Cloudy Lemon|600 ml|30">Cloudy Lemon - 600 ml</option>
+            <option value="Power-Up Cola|500 ml|32">Power-Up - 500 ml</option>
             <option value="Campa Soda|500 ml|25">Campa Soda - 500 ml</option>
-            <option value="Bubbles Soda|750 ml|28">Bubbles Soda - 750 ml</option>
-            <option value="Spinner Energy Drink|200 ml|35">Spinner Energy Drink - 200 ml</option>
-            <option value="Runner Energy|250 ml|38">Runner Energy Drink - 250 ml</option>
+            <option value="Bubbles Soda|750 ml|28">Bubbles - 750 ml</option>
+            <option value="Spinner Energy|200 ml|35">Spinner - 200 ml</option>
+            <option value="Runner Energy|250 ml|38">Runner - 250 ml</option>
             <option value="Joos Mango|200 ml|22">Joos Mango - 200 ml</option>
-            <option value="Independence Water|1.5 L|20">Independence Water - 1.5 L</option>
-            <option value="Sure Water|1 L|18">Sure Water - 1 L</option>
+            <option value="Independence Water|1.5 L|20">Water - 1.5 L</option>
+            <option value="Sure Water|1 L|18">Water - 1 L</option>
           </select>
-          <div class="input-group mb-3">
+          <div class="input-group mb-2">
             <input type="number" id="qty" class="form-control" placeholder="Qty" min="1" value="1">
-            <button class="btn btn-primary" onclick="addProduct()">Add Product</button>
+            <button class="btn btn-primary" onclick="addProduct()">Add</button>
           </div>
         </div>
       </div>
 
-      <table class="table-bordered">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Size</th>
-            <th>Qty</th>
-            <th>Rate (₹)</th>
-            <th>Amount (₹)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="invoiceBody"></tbody>
-      </table>
+      <div style="overflow-x: auto;">
+        <table class="table-bordered">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Size</th>
+              <th>Qty</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="invoiceBody"></tbody>
+        </table>
+      </div>
 
-      <div class="right mt-3">
+      <div class="right mt-2">
         <h4>Subtotal: ₹<span id="subtotal">0.00</span></h4>
         <h4>GST (18%): ₹<span id="gst">0.00</span></h4>
-        <h3>Grand Total: ₹<span id="total">0.00</span></h3>
+        <h3>Total: ₹<span id="total">0.00</span></h3>
       </div>
 
-      <div class="signature mt-4">
-        <p><strong>Authorized Signature:</strong> ____________________</p>
-        <p><strong>Stamp:</strong> ____________________</p>
-      </div>
-
-      <div class="mt-4">
-        <button class="btn btn-success" onclick="saveInvoice()">Save Invoice</button>
-        <button class="btn btn-success" onclick="printInvoice()">🖨️ Print Invoice</button>
-        <button class="btn btn-warning" onclick="saveDraft()">Save Draft</button>
+      <div class="mt-3">
+        <button class="btn btn-success" onclick="saveInvoice()">Save</button>
+        <button class="btn btn-success" onclick="printInvoice()">Print</button>
+        <button class="btn btn-warning" onclick="saveDraft()">Draft</button>
       </div>
     </div>
 
-    <!-- Van Stock Management Tab -->
+    <!-- Van Stock Management Tab (Mobile Optimized) -->
     <div class="tab-pane fade" id="stockTab">
-      <h3>Van Stock Management - <span id="vanOperatorName"></span></h3>
-      <div class="alert alert-info">
-        <strong>Current Stock:</strong> <span id="currentStockDisplay"></span>
+      <h3>Van Stock - <span id="vanOperatorName"></span></h3>
+      <div class="alert alert-info py-2">
+        <strong>Current:</strong> <span id="currentStockDisplay"></span>
       </div>
       
       <h4>Request Stock</h4>
       <div class="row">
         <div class="col-md-6">
-          <select id="stockProductSelect" class="form-select mb-2">
-            <option value="">-- Select Product --</option>
+          <select id="stockProductSelect" class="form-select mb-1">
+            <option value="">-- Select --</option>
             <option value="Campa Cola|600 ml">Campa Cola - 600 ml</option>
             <option value="Campa Orange|600 ml">Campa Orange - 600 ml</option>
             <option value="Campa Lemon|600 ml">Campa Lemon - 600 ml</option>
-            <option value="Campa Cloudy Lemon|600 ml">Campa Cloudy Lemon - 600 ml</option>
-            <option value="Power-Up Cola|500 ml">Power-Up Cola - 500 ml</option>
+            <option value="Campa Cloudy Lemon|600 ml">Cloudy Lemon - 600 ml</option>
+            <option value="Power-Up Cola|500 ml">Power-Up - 500 ml</option>
             <option value="Campa Soda|500 ml">Campa Soda - 500 ml</option>
-            <option value="Bubbles Soda|750 ml">Bubbles Soda - 750 ml</option>
-            <option value="Spinner Energy Drink|200 ml">Spinner Energy Drink - 200 ml</option>
-            <option value="Runner Energy|250 ml">Runner Energy Drink - 250 ml</option>
+            <option value="Bubbles Soda|750 ml">Bubbles - 750 ml</option>
+            <option value="Spinner Energy|200 ml">Spinner - 200 ml</option>
+            <option value="Runner Energy|250 ml">Runner - 250 ml</option>
             <option value="Joos Mango|200 ml">Joos Mango - 200 ml</option>
-            <option value="Independence Water|1.5 L">Independence Water - 1.5 L</option>
-            <option value="Sure Water|1 L">Sure Water - 1 L</option>
+            <option value="Independence Water|1.5 L">Water - 1.5 L</option>
+            <option value="Sure Water|1 L">Water - 1 L</option>
           </select>
         </div>
         <div class="col-md-4">
-          <input type="number" id="stockQty" class="form-control" placeholder="Quantity" min="1" value="1">
+          <input type="number" id="stockQty" class="form-control" placeholder="Qty" min="1" value="1">
         </div>
         <div class="col-md-2">
-          <button class="btn btn-primary w-100" onclick="requestStock()">Request Stock</button>
+          <button class="btn btn-primary w-100" onclick="requestStock()">Request</button>
         </div>
       </div>
       
-      <h4 class="mt-4">Current Stock</h4>
-      <table class="table-bordered mt-3" id="vanStockTable">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Size</th>
-            <th>Loaded Qty</th>
-            <th>Sold Qty</th>
-            <th>Remaining</th>
-          </tr>
-        </thead>
-        <tbody id="vanStockBody"></tbody>
-      </table>
+      <h4 class="mt-3">Current Stock</h4>
+      <div style="overflow-x: auto;">
+        <table class="table-bordered">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Size</th>
+              <th>Loaded</th>
+              <th>Sold</th>
+              <th>Remaining</th>
+            </tr>
+          </thead>
+          <tbody id="vanStockBody"></tbody>
+        </table>
+      </div>
       
-      <h4 class="mt-4">Pending Requests</h4>
-      <table class="table-bordered mt-3" id="pendingRequestsTable">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Size</th>
-            <th>Requested Qty</th>
-            <th>Date</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="pendingRequestsBody"></tbody>
-      </table>
+      <h4 class="mt-3">Pending Requests</h4>
+      <div style="overflow-x: auto;">
+        <table class="table-bordered">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Size</th>
+              <th>Qty</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="pendingRequestsBody"></tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- Admin Dashboard Tab -->
+    <!-- Admin Dashboard Tab (Mobile Optimized) -->
     <div class="tab-pane fade" id="adminTab">
       <h3>Admin Dashboard</h3>
       
-      <div class="row mb-4">
+      <div class="row mb-2">
         <div class="col-md-6">
           <div class="card">
-            <div class="card-header bg-primary text-white">
-              Pending Invoice Approvals
+            <div class="card-header bg-primary text-white py-2">
+              Pending Invoices
             </div>
-            <div class="card-body">
+            <div class="card-body p-2">
               <div id="pendingApprovalsList"></div>
             </div>
           </div>
         </div>
         <div class="col-md-6">
           <div class="card">
-            <div class="card-header bg-warning text-white">
-              Pending Stock Requests
+            <div class="card-header bg-warning text-white py-2">
+              Pending Stock
             </div>
-            <div class="card-body">
+            <div class="card-body p-2">
               <div id="pendingStockApprovals"></div>
             </div>
           </div>
         </div>
       </div>
       
-      <div class="row mb-4">
-        <div class="col-md-12">
-          <div class="card">
-            <div class="card-header bg-success text-white">
-              Van Operators Summary
-            </div>
-            <div class="card-body">
-              <div id="vanOperatorsSummary"></div>
-            </div>
-          </div>
+      <div class="card mb-2">
+        <div class="card-header bg-success text-white py-2">
+          Van Operators
+        </div>
+        <div class="card-body p-2">
+          <div id="vanOperatorsSummary"></div>
         </div>
       </div>
       
       <h4>Recent Invoices</h4>
-      <div class="mb-3">
-        <button class="btn btn-secondary" onclick="exportInvoices('csv')">Export to CSV</button>
-        <button class="btn btn-secondary" onclick="exportInvoices('excel')">Export to Excel</button>
+      <div class="mb-2">
+        <button class="btn btn-secondary btn-sm" onclick="exportInvoices('csv')">CSV</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportInvoices('excel')">Excel</button>
       </div>
-      <table class="table-bordered">
-        <thead>
-          <tr>
-            <th>Invoice No</th>
-            <th>Date</th>
-            <th>Dealer</th>
-            <th>Amount</th>
-            <th>Van Operator</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="invoicesList"></tbody>
-      </table>
+      <div style="overflow-x: auto;">
+        <table class="table-bordered">
+          <thead>
+            <tr>
+              <th>Inv No</th>
+              <th>Date</th>
+              <th>Dealer</th>
+              <th>Amount</th>
+              <th>Operator</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="invoicesList"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -329,7 +439,7 @@
   let invoiceCounter = 0;
   let isOnline = navigator.onLine;
   const offlineInvoices = JSON.parse(localStorage.getItem('offlineInvoices') || [];
-  const offlineStockRequests = JSON.parse(localStorage.getItem('offlineStockRequests') || [];
+  const offlineStockRequests = JSON.parse(localStorage.getItem('offlineStockRequests') || []);
   const draftInvoices = JSON.parse(localStorage.getItem('draftInvoices')) || [];
 
   // Initialize the app
@@ -587,7 +697,7 @@
         <td>${item.qty}</td>
         <td>₹${item.rate.toFixed(2)}</td>
         <td>₹${item.amount.toFixed(2)}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">Remove</button></td>
+        <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">X</button></td>
       `;
       invoiceBody.appendChild(row);
       newSubtotal += item.amount;
@@ -743,7 +853,7 @@
     const printWindow = window.open('', '', 'width=800,height=600');
     printWindow.document.write('<html><head><title>Invoice Print</title>');
     printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">');
-    printWindow.document.write('<style>body { font-family: Arial; padding: 20px; }</style>');
+    printWindow.document.write('<style>body { font-family: Arial; padding: 5px; font-size: 12px; }</style>');
     printWindow.document.write('</head><body>');
     printWindow.document.write(modal.querySelector('.modal-body').innerHTML);
     printWindow.document.write('</body></html>');
@@ -832,7 +942,7 @@
     
     // Update tab title with stock count
     document.querySelector('[href="#stockTab"]').innerHTML = 
-      `Van Stock Management <span class="badge bg-primary">${totalStock}</span>`;
+      `Stock <span class="badge bg-primary">${totalStock}</span>`;
   }
 
   // Load pending stock requests for operator
@@ -889,9 +999,9 @@
         const invoice = doc.data();
         html += `
           <div class="card mb-2">
-            <div class="card-body">
-              <h5 class="card-title">${invoice.invoiceNo}</h5>
-              <p class="card-text">
+            <div class="card-body p-2">
+              <h5 class="card-title mb-1">${invoice.invoiceNo}</h5>
+              <p class="card-text mb-1">
                 <strong>Dealer:</strong> ${invoice.dealer.name}<br>
                 <strong>Amount:</strong> ₹${invoice.total.toFixed(2)}<br>
                 <strong>Operator:</strong> ${invoice.createdBy}
@@ -925,11 +1035,10 @@
         const request = doc.data();
         html += `
           <div class="card mb-2">
-            <div class="card-body">
-              <h5>${request.product.name} (${request.product.size})</h5>
-              <p>Operator: ${request.operatorEmail}</p>
-              <p>Quantity: ${request.quantity}</p>
-              <p>Date: ${new Date(request.timestamp).toLocaleDateString()}</p>
+            <div class="card-body p-2">
+              <h5 class="mb-1">${request.product.name} (${request.product.size})</h5>
+              <p class="mb-1">Operator: ${request.operatorEmail}</p>
+              <p class="mb-1">Qty: ${request.quantity}</p>
               <button onclick="approveStockRequest('${doc.id}', '${request.operatorId}', 
                 '${request.product.name}', '${request.product.size}', ${request.quantity})" 
                 class="btn btn-success btn-sm">Approve</button>
@@ -944,12 +1053,11 @@
       offlineStockRequests.forEach(request => {
         html += `
           <div class="card mb-2">
-            <div class="card-body">
-              <h5>${request.product.name} (${request.product.size})</h5>
-              <p>Operator: ${request.operatorEmail}</p>
-              <p>Quantity: ${request.quantity}</p>
-              <p>Date: ${new Date(request.timestamp).toLocaleDateString()}</p>
-              <p class="text-warning">Offline - Approve when user is online</p>
+            <div class="card-body p-2">
+              <h5 class="mb-1">${request.product.name} (${request.product.size})</h5>
+              <p class="mb-1">Operator: ${request.operatorEmail}</p>
+              <p class="mb-1">Qty: ${request.quantity}</p>
+              <p class="text-warning mb-1">Offline - Approve when online</p>
             </div>
           </div>
         `;
@@ -965,7 +1073,7 @@
   async function loadVanOperatorsSummary() {
     try {
       const querySnapshot = await getDocs(collection(db, 'vanStock'));
-      let html = '<table class="table"><thead><tr><th>Operator</th><th>Products</th><th>Total Stock</th></tr></thead><tbody>';
+      let html = '<table class="table"><thead><tr><th>Operator</th><th>Products</th><th>Stock</th></tr></thead><tbody>';
       
       querySnapshot.forEach(doc => {
         const stock = doc.data().stock;
@@ -979,7 +1087,7 @@
         
         html += `
           <tr>
-            <td>${doc.id}</td>
+            <td>${doc.id.substring(0, 8)}...</td>
             <td>${productCount}</td>
             <td>${totalStock}</td>
           </tr>
@@ -1009,9 +1117,9 @@
           <tr>
             <td>${invoice.invoiceNo}</td>
             <td>${invoice.invoiceDate.toDate().toLocaleDateString()}</td>
-            <td>${invoice.dealer.name}</td>
+            <td>${invoice.dealer.name.substring(0, 10)}...</td>
             <td>₹${invoice.total.toFixed(2)}</td>
-            <td>${invoice.createdBy}</td>
+            <td>${invoice.createdBy.substring(0, 10)}...</td>
             <td>${invoice.status}</td>
             <td>
               <button onclick="viewInvoice('${doc.id}')" class="btn btn-primary btn-sm">View</button>
@@ -1033,7 +1141,7 @@
         approvedAt: serverTimestamp(),
         approvedBy: currentUser.email
       });
-      alert('Invoice approved successfully!');
+      alert('Invoice approved!');
       loadPendingApprovals();
       loadRecentInvoices();
     } catch (error) {
@@ -1090,7 +1198,7 @@
         lastUpdated: serverTimestamp()
       });
       
-      alert('Stock request approved and updated');
+      alert('Stock request approved!');
       loadPendingStockApprovals();
     } catch (error) {
       alert('Error approving stock request: ' + error.message);
@@ -1139,36 +1247,34 @@
             <p><strong>Date:</strong> ${invoice.invoiceDate.toDate().toLocaleDateString()}</p>
             <p><strong>Status:</strong> ${invoice.status}</p>
             <p><strong>Operator:</strong> ${invoice.createdBy}</p>
-            ${invoice.approvedBy ? `<p><strong>Approved By:</strong> ${invoice.approvedBy}</p>` : ''}
-            ${invoice.rejectedBy ? `<p><strong>Rejected By:</strong> ${invoice.rejectedBy}</p>` : ''}
           </div>
           
-          <div class="row mt-3">
-            <div class="col-md-6">
-              <h4>Dealer Information</h4>
-              <p><strong>Name:</strong> ${invoice.dealer.name}</p>
-              <p><strong>Address:</strong> ${invoice.dealer.address || 'N/A'}</p>
-              <p><strong>GSTIN:</strong> ${invoice.dealer.gstin || 'N/A'}</p>
-            </div>
+          <div class="mt-2">
+            <h4>Dealer Information</h4>
+            <p><strong>Name:</strong> ${invoice.dealer.name}</p>
+            <p><strong>Address:</strong> ${invoice.dealer.address || 'N/A'}</p>
+            <p><strong>GSTIN:</strong> ${invoice.dealer.gstin || 'N/A'}</p>
           </div>
           
-          <table class="table-bordered mt-3">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Size</th>
-                <th>Qty</th>
-                <th>Rate (₹)</th>
-                <th>Amount (₹)</th>
-              </tr>
-            </thead>
-            <tbody>${itemsHTML}</tbody>
-          </table>
+          <div style="overflow-x: auto;">
+            <table class="table-bordered mt-2">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Size</th>
+                  <th>Qty</th>
+                  <th>Rate</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>${itemsHTML}</tbody>
+            </table>
+          </div>
           
-          <div class="right mt-3">
+          <div class="right mt-2">
             <h4>Subtotal: ₹${invoice.subtotal.toFixed(2)}</h4>
             <h4>GST (18%): ₹${invoice.gst.toFixed(2)}</h4>
-            <h3>Grand Total: ₹${invoice.total.toFixed(2)}</h3>
+            <h3>Total: ₹${invoice.total.toFixed(2)}</h3>
           </div>
         `;
         
@@ -1178,8 +1284,8 @@
         const approvalButtons = document.getElementById('approvalButtons');
         if (invoice.status === 'pending') {
           approvalButtons.innerHTML = `
-            <button onclick="approveInvoice('${invoiceId}')" class="btn btn-success">Approve</button>
-            <button onclick="rejectInvoice('${invoiceId}')" class="btn btn-danger">Reject</button>
+            <button onclick="approveInvoice('${invoiceId}')" class="btn btn-success btn-sm">Approve</button>
+            <button onclick="rejectInvoice('${invoiceId}')" class="btn btn-danger btn-sm">Reject</button>
           `;
         } else {
           approvalButtons.innerHTML = '';
