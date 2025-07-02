@@ -562,6 +562,21 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   
   <script>
+    // Add this at the top of your admin.js script
+    // Check authentication state
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = 'login.html';
+      } else {
+        db.collection('users').doc(user.uid).get().then(doc => {
+          if (!doc.exists || doc.data().role !== 'admin') {
+            auth.signOut().then(() => {
+              window.location.href = 'login.html';
+            });
+          }
+        });
+      }
+    });
     // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBzl1R3xsNUKQ9wO3DX8nHt3O0NkI6Cc_E",
