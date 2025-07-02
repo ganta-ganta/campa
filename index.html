@@ -1,747 +1,640 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Campa Beverages - Inventory & Invoice System</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { font-family: Arial; padding: 20px; max-width: 1200px; margin: auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background-color: #f4f4f4; }
-    .btn { padding: 8px 12px; color: white; border: none; cursor: pointer; }
-    .btn-primary { background: #007bff; }
-    .btn-success { background: green; }
-    .btn-danger { background: red; }
-    .right { text-align: right; }
-    .signature { margin-top: 40px; }
-    .company-header { background-color: #f8f9fa; padding: 20px; border-radius: 5px; }
-    .login-container { max-width: 400px; margin: 50px auto; }
-    .hidden { display: none; }
-    .nav-tabs { margin-bottom: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiwin Water Bottles | Premium Hydration Solutions</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary: #47002b;
+            --secondary: #E03FD8;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(71, 0, 43, 0.8), rgba(71, 0, 43, 0.8)), 
+                        url('https://images.unsplash.com/photo-1602143407151-7111542de6e8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 90vh;
+            color: white;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            padding-top: 80px;
+        }
+        
+        .navbar {
+            background-color: var(--primary);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            font-weight: 600;
+            padding: 10px 25px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #d12ec9;
+            border-color: #d12ec9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline-light {
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline-light:hover {
+            background-color: white;
+            color: var(--primary) !important;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            margin-bottom: 30px;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+        
+        .gallery-item {
+            margin-bottom: 30px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: all 0.5s;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .testimonial-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin: 15px;
+            position: relative;
+        }
+        
+        .testimonial-card:before {
+            content: '\201C';
+            font-family: Georgia, serif;
+            font-size: 60px;
+            color: var(--light-gray);
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            line-height: 1;
+        }
+        
+        .testimonial-text {
+            position: relative;
+            z-index: 1;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .contact-info {
+            margin-bottom: 30px;
+        }
+        
+        .contact-icon {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-right: 15px;
+        }
+        
+        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+        
+        .social-icon:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links {
+            margin-bottom: 30px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            margin: 0 15px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                height: 70vh;
+                padding-top: 60px;
+            }
+            
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<div id="loginPage" class="login-container">
-  <h2 class="text-center mb-4">Campa Beverages Login</h2>
-  <div class="card">
-    <div class="card-body">
-      <div class="mb-3">
-        <label for="loginEmail" class="form-label">Email</label>
-        <input type="email" class="form-control" id="loginEmail" placeholder="operator@campa.com">
-      </div>
-      <div class="mb-3">
-        <label for="loginPassword" class="form-label">Password</label>
-        <input type="password" class="form-control" id="loginPassword" placeholder="Password">
-      </div>
-      <button id="loginBtn" class="btn btn-primary w-100">Login</button>
-    </div>
-  </div>
-</div>
-
-<div id="appContainer" class="hidden">
-  <ul class="nav nav-tabs" id="myTab">
-    <li class="nav-item">
-      <a class="nav-link active" data-bs-toggle="tab" href="#invoiceTab">Invoice Generator</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="tab" href="#stockTab">Van Stock Management</a>
-    </li>
-    <li class="nav-item" id="adminTabItem">
-      <a class="nav-link" data-bs-toggle="tab" href="#adminTab">Admin Dashboard</a>
-    </li>
-    <li class="nav-item ml-auto">
-      <button onclick="logout()" class="btn btn-danger">Logout</button>
-    </li>
-  </ul>
-
-  <div class="tab-content">
-    <!-- Invoice Generator Tab --->
-    <div class="tab-pane fade show active" id="invoiceTab">
-      <div class="company-header">
-        <h2>Campa Beverages Pvt. Ltd.</h2>
-        <p>123 Beverage Street, Hyderabad, Telangana - 500001</p>
-        <p><strong>GSTIN:</strong> 37XXXXXXXXXX | <strong>Phone:</strong> 040-12345678 | <strong>Email:</strong> info@campabeverages.com</p>
-        <p><strong>Invoice No:</strong> <span id="invoiceNo"></span> | <strong>Date:</strong> <span id="invoiceDate"></span></p>
-      </div>
-
-      <hr>
-
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <h4>Dealer Information</h4>
-          <input type="text" id="dealerName" class="form-control mb-2" placeholder="Dealer Name">
-          <input type="text" id="dealerAddress" class="form-control mb-2" placeholder="Dealer Address">
-          <input type="text" id="dealerGST" class="form-control mb-2" placeholder="Dealer GSTIN">
-        </div>
-        <div class="col-md-6">
-          <h4>Add Product</h4>
-          <select id="productSelect" class="form-select mb-2">
-            <option value="">-- Select Product --</option>
-            <option value="Campa Cola|600 ml|28">Campa Cola - 600 ml</option>
-            <option value="Campa Orange|600 ml|28">Campa Orange - 600 ml</option>
-            <option value="Campa Lemon|600 ml|28">Campa Lemon - 600 ml</option>
-            <option value="Campa Cloudy Lemon|600 ml|30">Campa Cloudy Lemon - 600 ml</option>
-            <option value="Power-Up Cola|500 ml|32">Power-Up Cola - 500 ml</option>
-            <option value="Campa Soda|500 ml|25">Campa Soda - 500 ml</option>
-            <option value="Bubbles Soda|750 ml|28">Bubbles Soda - 750 ml</option>
-            <option value="Spinner Energy Drink|200 ml|35">Spinner Energy Drink - 200 ml</option>
-            <option value="Runner Energy|250 ml|38">Runner Energy Drink - 250 ml</option>
-            <option value="Joos Mango|200 ml|22">Joos Mango - 200 ml</option>
-            <option value="Independence Water|1.5 L|20">Independence Water - 1.5 L</option>
-            <option value="Sure Water|1 L|18">Sure Water - 1 L</option>
-          </select>
-          <div class="input-group mb-3">
-            <input type="number" id="qty" class="form-control" placeholder="Qty" min="1">
-            <button class="btn btn-primary" onclick="addProduct()">Add Product</button>
-          </div>
-        </div>
-      </div>
-
-      <table class="table-bordered">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Size</th>
-            <th>Qty</th>
-            <th>Rate (₹)</th>
-            <th>Amount (₹)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="invoiceBody"></tbody>
-      </table>
-
-      <div class="right mt-3">
-        <h4>Subtotal: ₹<span id="subtotal">0.00</span></h4>
-        <h4>GST (18%): ₹<span id="gst">0.00</span></h4>
-        <h3>Grand Total: ₹<span id="total">0.00</span></h3>
-      </div>
-
-      <div class="signature mt-4">
-        <p><strong>Authorized Signature:</strong> ____________________</p>
-        <p><strong>Stamp:</strong> ____________________</p>
-      </div>
-
-      <div class="mt-4">
-        <button class="btn btn-success" onclick="saveInvoice()">Save Invoice</button>
-        <button class="btn btn-success" onclick="printInvoice()">🖨️ Print Invoice</button>
-      </div>
-    </div>
-
-    <!-- Van Stock Management Tab -->
-    <div class="tab-pane fade" id="stockTab">
-      <h3>Van Stock Management - <span id="vanOperatorName"></span></h3>
-      <div class="alert alert-info">
-        <strong>Current Stock:</strong> <span id="currentStockDisplay"></span>
-      </div>
-      
-      <h4>Load Stock</h4>
-      <div class="row">
-        <div class="col-md-6">
-          <select id="stockProductSelect" class="form-select mb-2">
-            <option value="">-- Select Product --</option>
-            <option value="Campa Cola|600 ml">Campa Cola - 600 ml</option>
-            <option value="Campa Orange|600 ml">Campa Orange - 600 ml</option>
-            <option value="Campa Lemon|600 ml">Campa Lemon - 600 ml</option>
-            <option value="Campa Cloudy Lemon|600 ml">Campa Cloudy Lemon - 600 ml</option>
-            <option value="Power-Up Cola|500 ml">Power-Up Cola - 500 ml</option>
-            <option value="Campa Soda|500 ml">Campa Soda - 500 ml</option>
-            <option value="Bubbles Soda|750 ml">Bubbles Soda - 750 ml</option>
-            <option value="Spinner Energy Drink|200 ml">Spinner Energy Drink - 200 ml</option>
-            <option value="Runner Energy|250 ml">Runner Energy Drink - 250 ml</option>
-            <option value="Joos Mango|200 ml">Joos Mango - 200 ml</option>
-            <option value="Independence Water|1.5 L">Independence Water - 1.5 L</option>
-            <option value="Sure Water|1 L">Sure Water - 1 L</option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <input type="number" id="stockQty" class="form-control" placeholder="Quantity" min="1">
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-primary w-100" onclick="addToVanStock()">Add to Van</button>
-        </div>
-      </div>
-      
-      <table class="table-bordered mt-3" id="vanStockTable">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Size</th>
-            <th>Loaded Qty</th>
-            <th>Sold Qty</th>
-            <th>Remaining</th>
-          </tr>
-        </thead>
-        <tbody id="vanStockBody"></tbody>
-      </table>
-    </div>
-
-    <!-- Admin Dashboard Tab -->
-    <div class="tab-pane fade" id="adminTab">
-      <h3>Admin Dashboard</h3>
-      
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header bg-primary text-white">
-              Pending Approvals
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-tint mr-2"></i>KIWIN WATER
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home"><i class="fas fa-home mr-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features"><i class="fas fa-star mr-1"></i> Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#gallery"><i class="fas fa-images mr-1"></i> Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials"><i class="fas fa-quote-left mr-1"></i> Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact"><i class="fas fa-envelope mr-1"></i> Contact</a>
+                    </li>
+                    <li class="nav-item ml-lg-3 mt-2 mt-lg-0">
+                        <a class="btn btn-primary" href="https://api.whatsapp.com/send?phone=+919368595959&text=Hello,%20I%20am%20interested%20in%20Kiwin%20water%20bottles.%20Could%20you%20please%20share%20the%20available%20products%20and%20offers?" target="_blank">
+                            <i class="fab fa-whatsapp mr-1"></i> Shop Now
+                        </a>
+                    </li>
+                </ul>
             </div>
-            <div class="card-body">
-              <div id="pendingApprovalsList"></div>
-            </div>
-          </div>
         </div>
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header bg-success text-white">
-              Van Operators Summary
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 font-weight-bold mb-4">Premium Hydration, Elevated Style</h1>
+                    <p class="lead mb-5">Experience the perfect blend of functionality and design with our eco-friendly water bottles that keep you hydrated in style.</p>
+                    <div>
+                        <a href="https://api.whatsapp.com/send?phone=+919368595959" target="_blank" class="btn btn-primary btn-lg mr-3">
+                            <i class="fas fa-shopping-cart mr-2"></i> Shop Now
+                        </a>
+                        <a href="#features" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-info-circle mr-2"></i> Learn More
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-              <div id="vanOperatorsSummary"></div>
-            </div>
-          </div>
         </div>
-      </div>
-      
-      <h4>Recent Invoices</h4>
-      <table class="table-bordered">
-        <thead>
-          <tr>
-            <th>Invoice No</th>
-            <th>Date</th>
-            <th>Dealer</th>
-            <th>Amount</th>
-            <th>Van Operator</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="invoicesList"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
+    </section>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Features Section -->
+    <section id="features" class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="section-title">
+                <h2>Why Choose Kiwin</h2>
+                <p class="text-muted">Discover what makes our water bottles stand out from the rest</p>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-recycle"></i>
+                        </div>
+                        <h3>Eco-Friendly</h3>
+                        <p class="text-muted">Made with 100% recyclable materials to reduce environmental impact and promote sustainability.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3>Leak-Proof</h3>
+                        <p class="text-muted">Advanced sealing technology ensures no spills, keeping your bag dry and your mind at ease.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-thermometer-half"></i>
+                        </div>
+                        <h3>Temperature Control</h3>
+                        <p class="text-muted">Double-walled insulation maintains your drink's temperature for up to 24 hours.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <h3>Lightweight</h3>
+                        <p class="text-muted">Premium materials that are durable yet lightweight for easy everyday carry.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brush"></i>
+                        </div>
+                        <h3>Sleek Design</h3>
+                        <p class="text-muted">Modern aesthetics that complement your style, whether at work or the gym.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <h3>Premium Quality</h3>
+                        <p class="text-muted">Rigorously tested to meet the highest standards of durability and performance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<!-- Firebase SDK -->
-<script type="module">
-  // Import Firebase modules
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { 
-    getAuth, 
-    signInWithEmailAndPassword, 
-    signOut,
-    onAuthStateChanged 
-  } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-  import { 
-    getFirestore,
-    collection,
-    doc,
-    setDoc,
-    getDoc,
-    addDoc,
-    updateDoc,
-    query,
-    where,
-    orderBy,
-    limit,
-    getDocs,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-5">
+        <div class="container py-5">
+            <div class="section-title">
+                <h2>Our Product Gallery</h2>
+                <p class="text-muted">Explore our stylish collection of premium water bottles</p>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Kiwin Classic Bottle" class="img-fluid">
+                        <div class="p-3">
+                            <h4>Kiwin Classic</h4>
+                            <p class="text-muted">Elegant design with 24-hour insulation</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1605190557072-8eaf2a6b02db?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Kiwin Sport Bottle" class="img-fluid">
+                        <div class="p-3">
+                            <h4>Kiwin Sport</h4>
+                            <p class="text-muted">Perfect for active lifestyles</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1605165699902-4b9aebdf7e1a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Kiwin Travel Bottle" class="img-fluid">
+                        <div class="p-3">
+                            <h4>Kiwin Travel</h4>
+                            <p class="text-muted">Large capacity for all-day adventures</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  // Your Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyBm2Y2-KaPh_9prtDyEh75ys9bOS_YivyU",
-    authDomain: "campacola-45a6c.firebaseapp.com",
-    projectId: "campacola-45a6c",
-    storageBucket: "campacola-45a6c.appspot.com",
-    messagingSenderId: "950062364838",
-    appId: "1:950062364838:web:c016c1c2b63d661dc09c67",
-    measurementId: "G-0F1FMP4D6X"
-  };
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="section-title">
+                <h2>What Our Customers Say</h2>
+                <p class="text-muted">Hear from people who love our products</p>
+            </div>
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div id="testimonialCarousel" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="testimonial-card">
+                                    <p class="testimonial-text">The Kiwin water bottle has completely changed my daily routine. It keeps my water cold all day long, even in the summer heat. The design is sleek and fits perfectly in my car cup holder.</p>
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <h5 class="testimonial-author mb-0">Chaitanya</h5>
+                                            <small class="text-muted">Verified Buyer</small>
+                                        </div>
+                                        <div class="ml-auto">
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="testimonial-card">
+                                    <p class="testimonial-text">I've tried many water bottles, but Kiwin is by far the best. The leak-proof design is perfect for my gym bag, and the wide mouth makes it easy to clean and add ice cubes.</p>
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <h5 class="testimonial-author mb-0">Sai</h5>
+                                            <small class="text-muted">Fitness Enthusiast</small>
+                                        </div>
+                                        <div class="ml-auto">
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="testimonial-card">
+                                    <p class="testimonial-text">As someone who cares about the environment, I love that Kiwin bottles are made from sustainable materials. Plus, they look so stylish that I get compliments everywhere I go!</p>
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <h5 class="testimonial-author mb-0">Priya</h5>
+                                            <small class="text-muted">Eco-Conscious Consumer</small>
+                                        </div>
+                                        <div class="ml-auto">
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#testimonialCarousel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#testimonialCarousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    <!-- Contact Section -->
+    <section id="contact" class="py-5">
+        <div class="container py-5">
+            <div class="section-title">
+                <h2>Get In Touch</h2>
+                <p class="text-muted">We'd love to hear from you</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-5 mb-5 mb-lg-0">
+                    <div class="contact-info">
+                        <h4 class="mb-4"><i class="fas fa-map-marker-alt contact-icon"></i> Our Location</h4>
+                        <p class="text-muted">123 Hydration Street, Watertown, WT 56789</p>
+                    </div>
+                    <div class="contact-info">
+                        <h4 class="mb-4"><i class="fas fa-phone-alt contact-icon"></i> Call Us</h4>
+                        <p class="text-muted">+91 93685 95959</p>
+                    </div>
+                    <div class="contact-info">
+                        <h4 class="mb-4"><i class="fas fa-envelope contact-icon"></i> Email Us</h4>
+                        <p class="text-muted">info@kiwinwater.com</p>
+                    </div>
+                    <div class="contact-info">
+                        <h4 class="mb-4"><i class="fas fa-clock contact-icon"></i> Business Hours</h4>
+                        <p class="text-muted">Monday - Friday: 9am to 6pm<br>Saturday: 10am to 4pm</p>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-5">
+                            <h4 class="mb-4">Send Us a Message</h4>
+                            <form>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Your Name">
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" class="form-control" placeholder="Your Email">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Subject">
+                                </div>
+                                <div class="form-group">
+                                    <textarea class="form-control" rows="5" placeholder="Your Message"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane mr-2"></i> Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  // Global variables
-  let currentUser = null;
-  let subtotal = 0;
-  let invoiceItems = [];
-  let vanStock = {};
-  let invoiceCounter = 0;
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h4 class="text-white mb-4"><i class="fas fa-tint mr-2"></i>KIWIN WATER</h4>
+                    <p>Premium hydration solutions that combine style, functionality, and sustainability for your everyday needs.</p>
+                    <div class="mt-4">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-white mb-4">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#home" class="text-white-50">Home</a></li>
+                        <li class="mb-2"><a href="#features" class="text-white-50">Features</a></li>
+                        <li class="mb-2"><a href="#gallery" class="text-white-50">Gallery</a></li>
+                        <li class="mb-2"><a href="#testimonials" class="text-white-50">Testimonials</a></li>
+                        <li class="mb-2"><a href="#contact" class="text-white-50">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-white mb-4">Products</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white-50">Classic Series</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Sport Series</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Travel Series</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Kids Series</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Accessories</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-white mb-4">Newsletter</h5>
+                    <p class="text-white-50">Subscribe to get updates on new products and special offers.</p>
+                    <form class="mt-3">
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Your Email">
+                            <div class="input-group-append">
+                                <button class="btn btn-secondary" type="submit">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr class="my-4 bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-left">
+                    <p class="mb-0 text-white-50">&copy; 2024 Kiwin Water. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-right">
+                    <p class="mb-0 text-white-50">Developed by <a href="#" class="text-white">GANTA</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-  // Initialize the app
-  function initApp() {
-    // Hide app container initially
-    document.getElementById('appContainer').classList.add('hidden');
-    document.getElementById('loginPage').classList.remove('hidden');
-
-    // Connect login button
-    document.getElementById('loginBtn').addEventListener('click', login);
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
-    // Check if user is already logged in
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-        loadUserData();
-        document.getElementById('appContainer').classList.remove('hidden');
-        document.getElementById('loginPage').classList.add('hidden');
-        
-        // Show/hide admin tab based on user role
-        if (user.email === 'admin@campabeverages.com') {
-          document.getElementById('adminTabItem').classList.remove('hidden');
-        } else {
-          document.getElementById('adminTabItem').classList.add('hidden');
-        }
-      }
-    });
-  }
-
-  // Login function
-  async function login() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      currentUser = userCredential.user;
-      loadUserData();
-    } catch (error) {
-      alert('Login failed: ' + error.message);
-    }
-  }
-
-  // Logout function
-  function logout() {
-    signOut(auth).then(() => {
-      currentUser = null;
-      document.getElementById('appContainer').classList.add('hidden');
-      document.getElementById('loginPage').classList.remove('hidden');
-    });
-  }
-
-  // Load user-specific data
-  async function loadUserData() {
-    if (!currentUser) return;
-    
-    // Set van operator name
-    document.getElementById('vanOperatorName').textContent = currentUser.email.split('@')[0];
-    
-    // Load invoice counter
-    try {
-      const counterDoc = await getDoc(doc(db, 'counters', 'invoiceCounter'));
-      if (counterDoc.exists()) {
-        invoiceCounter = counterDoc.data().value;
-        generateInvoiceNo();
-      }
-    } catch (error) {
-      console.error("Error loading invoice counter:", error);
-    }
-    
-    // Load van stock for operators
-    if (currentUser.email !== 'admin@campabeverages.com') {
-      try {
-        const vanStockDoc = await getDoc(doc(db, 'vanStock', currentUser.uid));
-        if (vanStockDoc.exists()) {
-          vanStock = vanStockDoc.data().stock || {};
-          updateVanStockDisplay();
-        }
-      } catch (error) {
-        console.error("Error loading van stock:", error);
-      }
-    }
-    
-    // Load admin data if admin
-    if (currentUser.email === 'admin@campabeverages.com') {
-      loadPendingApprovals();
-      loadVanOperatorsSummary();
-      loadRecentInvoices();
-    }
-  }
-
-  // Generate invoice number
-  function generateInvoiceNo() {
-    const now = new Date();
-    const id = 'CB-' + now.getFullYear() + '-' + String(invoiceCounter + 1).padStart(4, '0');
-    document.getElementById('invoiceNo').textContent = id;
-    document.getElementById('invoiceDate').textContent = now.toLocaleDateString();
-  }
-
-  // Add product to invoice
-  function addProduct() {
-    const select = document.getElementById('productSelect');
-    const value = select.value;
-    const qty = parseInt(document.getElementById('qty').value);
-    
-    if (!value || qty <= 0) return alert('Select a product and enter valid quantity.');
-    
-    // Check if product is available in van stock
-    const [name, size, rate] = value.split('|');
-    const productKey = `${name}|${size}`;
-    
-    if (currentUser.email !== 'admin@campabeverages.com') {
-      if (!vanStock[productKey] || vanStock[productKey].remaining < qty) {
-        return alert('Not enough stock in van for this product!');
-      }
-    }
-    
-    const amount = qty * parseFloat(rate);
-    subtotal += amount;
-    
-    // Add to invoice items array
-    const item = {
-      name,
-      size,
-      qty,
-      rate: parseFloat(rate),
-      amount
-    };
-    
-    invoiceItems.push(item);
-    
-    // Update invoice table
-    updateInvoiceTable();
-    
-    // Update van stock (preliminary - will be finalized on save)
-    if (currentUser.email !== 'admin@campabeverages.com') {
-      vanStock[productKey].sold = (vanStock[productKey].sold || 0) + qty;
-      vanStock[productKey].remaining = vanStock[productKey].loaded - vanStock[productKey].sold;
-      updateVanStockDisplay();
-    }
-  }
-
-  // Update invoice table display
-  function updateInvoiceTable() {
-    const invoiceBody = document.getElementById('invoiceBody');
-    invoiceBody.innerHTML = '';
-    
-    let newSubtotal = 0;
-    
-    invoiceItems.forEach((item, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${item.name}</td>
-        <td>${item.size}</td>
-        <td>${item.qty}</td>
-        <td>₹${item.rate.toFixed(2)}</td>
-        <td>₹${item.amount.toFixed(2)}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">Remove</button></td>
-      `;
-      invoiceBody.appendChild(row);
-      newSubtotal += item.amount;
-    });
-    
-    subtotal = newSubtotal;
-    const gst = subtotal * 0.18;
-    const total = subtotal + gst;
-    
-    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
-    document.getElementById('gst').textContent = gst.toFixed(2);
-    document.getElementById('total').textContent = total.toFixed(2);
-  }
-
-  // Remove item from invoice
-  function removeItem(index) {
-    const removedItem = invoiceItems.splice(index, 1)[0];
-    
-    // Update van stock if needed
-    if (currentUser.email !== 'admin@campabeverages.com') {
-      const productKey = `${removedItem.name}|${removedItem.size}`;
-      if (vanStock[productKey]) {
-        vanStock[productKey].sold -= removedItem.qty;
-        vanStock[productKey].remaining = vanStock[productKey].loaded - vanStock[productKey].sold;
-        updateVanStockDisplay();
-      }
-    }
-    
-    updateInvoiceTable();
-  }
-
-  // Save invoice to Firebase
-  async function saveInvoice() {
-    if (invoiceItems.length === 0) return alert('Add products to invoice before saving!');
-    
-    const dealerName = document.getElementById('dealerName').value;
-    if (!dealerName) return alert('Please enter dealer name!');
-    
-    const invoiceNo = document.getElementById('invoiceNo').textContent;
-    const invoiceDate = document.getElementById('invoiceDate').textContent;
-    
-    const gst = subtotal * 0.18;
-    const total = subtotal + gst;
-    
-    const invoiceData = {
-      invoiceNo,
-      invoiceDate: new Date(),
-      dealer: {
-        name: dealerName,
-        address: document.getElementById('dealerAddress').value,
-        gstin: document.getElementById('dealerGST').value
-      },
-      items: invoiceItems,
-      subtotal,
-      gst,
-      total,
-      status: currentUser.email === 'admin@campabeverages.com' ? 'approved' : 'pending',
-      createdBy: currentUser.email,
-      createdAt: serverTimestamp()
-    };
-    
-    try {
-      // Save invoice
-      await addDoc(collection(db, 'invoices'), invoiceData);
-      
-      // Update invoice counter
-      invoiceCounter++;
-      await setDoc(doc(db, 'counters', 'invoiceCounter'), { value: invoiceCounter });
-      
-      // Update van stock if operator
-      if (currentUser.email !== 'admin@campabeverages.com') {
-        await setDoc(doc(db, 'vanStock', currentUser.uid), {
-          stock: vanStock,
-          lastUpdated: serverTimestamp()
+    <!-- Smooth scrolling -->
+    <script>
+        $(document).ready(function(){
+            // Add smooth scrolling to all links
+            $("a").on('click', function(event) {
+                if (this.hash !== "") {
+                    event.preventDefault();
+                    var hash = this.hash;
+                    $('html, body').animate({
+                        scrollTop: $(hash).offset().top - 70
+                    }, 800, function(){
+                        window.location.hash = hash;
+                    });
+                }
+            });
         });
-      }
-      
-      alert('Invoice saved successfully!');
-      resetInvoiceForm();
-    } catch (error) {
-      alert('Error saving invoice: ' + error.message);
-    }
-  }
-
-  // Reset invoice form
-  function resetInvoiceForm() {
-    invoiceItems = [];
-    subtotal = 0;
-    document.getElementById('invoiceBody').innerHTML = '';
-    document.getElementById('subtotal').textContent = '0.00';
-    document.getElementById('gst').textContent = '0.00';
-    document.getElementById('total').textContent = '0.00';
-    document.getElementById('dealerName').value = '';
-    document.getElementById('dealerAddress').value = '';
-    document.getElementById('dealerGST').value = '';
-    generateInvoiceNo();
-  }
-
-  // Print invoice
-  function printInvoice() {
-    window.print();
-  }
-
-  // Van stock management functions
-  function addToVanStock() {
-    const select = document.getElementById('stockProductSelect');
-    const value = select.value;
-    const qty = parseInt(document.getElementById('stockQty').value);
-    
-    if (!value || qty <= 0) return alert('Select a product and enter valid quantity.');
-    
-    const [name, size] = value.split('|');
-    const productKey = `${name}|${size}`;
-    
-    if (!vanStock[productKey]) {
-      vanStock[productKey] = {
-        name,
-        size,
-        loaded: 0,
-        sold: 0,
-        remaining: 0
-      };
-    }
-    
-    vanStock[productKey].loaded += qty;
-    vanStock[productKey].remaining = vanStock[productKey].loaded - vanStock[productKey].sold;
-    
-    updateVanStockDisplay();
-    
-    // Clear inputs
-    document.getElementById('stockQty').value = '';
-  }
-
-  // Update van stock display
-  function updateVanStockDisplay() {
-    const vanStockBody = document.getElementById('vanStockBody');
-    vanStockBody.innerHTML = '';
-    
-    let stockDisplay = '';
-    
-    for (const key in vanStock) {
-      const item = vanStock[key];
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${item.name}</td>
-        <td>${item.size}</td>
-        <td>${item.loaded}</td>
-        <td>${item.sold}</td>
-        <td>${item.remaining}</td>
-      `;
-      vanStockBody.appendChild(row);
-      
-      if (item.remaining > 0) {
-        stockDisplay += `${item.name} (${item.size}): ${item.remaining}, `;
-      }
-    }
-    
-    document.getElementById('currentStockDisplay').textContent = 
-      stockDisplay.length > 0 ? stockDisplay.slice(0, -2) : 'No stock available';
-  }
-
-  // Admin functions
-  async function loadPendingApprovals() {
-    try {
-      const q = query(
-        collection(db, 'invoices'),
-        where('status', '==', 'pending'),
-        orderBy('createdAt', 'desc'),
-        limit(5)
-      );
-      
-      const querySnapshot = await getDocs(q);
-      let html = '';
-      querySnapshot.forEach((doc) => {
-        const invoice = doc.data();
-        html += `
-          <div class="card mb-2">
-            <div class="card-body">
-              <h5 class="card-title">${invoice.invoiceNo}</h5>
-              <p class="card-text">
-                <strong>Dealer:</strong> ${invoice.dealer.name}<br>
-                <strong>Amount:</strong> ₹${invoice.total.toFixed(2)}<br>
-                <strong>Operator:</strong> ${invoice.createdBy}
-              </p>
-              <button onclick="approveInvoice('${doc.id}')" class="btn btn-success btn-sm">Approve</button>
-              <button onclick="rejectInvoice('${doc.id}')" class="btn btn-danger btn-sm">Reject</button>
-            </div>
-          </div>
-        `;
-      });
-      
-      if (!html) html = '<p>No pending approvals</p>';
-      document.getElementById('pendingApprovalsList').innerHTML = html;
-    } catch (error) {
-      console.error("Error loading pending approvals:", error);
-    }
-  }
-
-  async function loadVanOperatorsSummary() {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'vanStock'));
-      let html = '<table class="table"><thead><tr><th>Operator</th><th>Products</th><th>Total Stock</th></tr></thead><tbody>';
-      
-      querySnapshot.forEach((doc) => {
-        const stock = doc.data().stock;
-        let productCount = 0;
-        let totalStock = 0;
-        
-        for (const key in stock) {
-          productCount++;
-          totalStock += stock[key].remaining;
-        }
-        
-        html += `
-          <tr>
-            <td>${doc.id}</td>
-            <td>${productCount}</td>
-            <td>${totalStock}</td>
-          </tr>
-        `;
-      });
-      
-      html += '</tbody></table>';
-      document.getElementById('vanOperatorsSummary').innerHTML = html;
-    } catch (error) {
-      console.error("Error loading van operators summary:", error);
-    }
-  }
-
-  async function loadRecentInvoices() {
-    try {
-      const q = query(
-        collection(db, 'invoices'),
-        orderBy('createdAt', 'desc'),
-        limit(10)
-      );
-      
-      const querySnapshot = await getDocs(q);
-      let html = '';
-      querySnapshot.forEach((doc) => {
-        const invoice = doc.data();
-        html += `
-          <tr>
-            <td>${invoice.invoiceNo}</td>
-            <td>${invoice.invoiceDate.toDate().toLocaleDateString()}</td>
-            <td>${invoice.dealer.name}</td>
-            <td>₹${invoice.total.toFixed(2)}</td>
-            <td>${invoice.createdBy}</td>
-            <td>${invoice.status}</td>
-            <td>
-              <button onclick="viewInvoice('${doc.id}')" class="btn btn-primary btn-sm">View</button>
-            </td>
-          </tr>
-        `;
-      });
-      
-      document.getElementById('invoicesList').innerHTML = html;
-    } catch (error) {
-      console.error("Error loading recent invoices:", error);
-    }
-  }
-
-  async function approveInvoice(invoiceId) {
-    try {
-      await updateDoc(doc(db, 'invoices', invoiceId), {
-        status: 'approved',
-        approvedAt: serverTimestamp()
-      });
-      alert('Invoice approved successfully!');
-      loadPendingApprovals();
-      loadRecentInvoices();
-    } catch (error) {
-      alert('Error approving invoice: ' + error.message);
-    }
-  }
-
-  async function rejectInvoice(invoiceId) {
-    try {
-      await updateDoc(doc(db, 'invoices', invoiceId), {
-        status: 'rejected',
-        rejectedAt: serverTimestamp()
-      });
-      alert('Invoice rejected!');
-      loadPendingApprovals();
-      loadRecentInvoices();
-    } catch (error) {
-      alert('Error rejecting invoice: ' + error.message);
-    }
-  }
-
-  function viewInvoice(invoiceId) {
-    // Implement detailed invoice view
-    alert('Viewing invoice ' + invoiceId);
-    // You can implement a modal or new page to show complete invoice details
-  }
-
-  // Expose functions to global scope
-  window.login = login;
-  window.logout = logout;
-  window.addProduct = addProduct;
-  window.removeItem = removeItem;
-  window.saveInvoice = saveInvoice;
-  window.printInvoice = printInvoice;
-  window.addToVanStock = addToVanStock;
-  window.approveInvoice = approveInvoice;
-  window.rejectInvoice = rejectInvoice;
-  window.viewInvoice = viewInvoice;
-
-  // Initialize the app when page loads
-  window.onload = initApp;
-</script>
+    </script>
 </body>
 </html>
