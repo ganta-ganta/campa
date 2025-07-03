@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Campa Beverages - Inventory & Invoice System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { 
@@ -220,6 +221,9 @@
     </li>
     <li class="nav-item">
       <a class="nav-link" data-bs-toggle="tab" href="#dashboardTab">Dashboard</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" href="#operatorSalesTab">Operator Sales</a>
     </li>
     <li class="nav-item ml-auto">
       <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
@@ -497,6 +501,14 @@
         </div>
       </div>
       
+      <!-- Download Buttons -->
+      <div class="mb-3">
+        <button class="btn btn-primary btn-sm" onclick="exportDashboardData('today')">Download Today</button>
+        <button class="btn btn-primary btn-sm" onclick="exportDashboardData('week')">Download Week</button>
+        <button class="btn btn-primary btn-sm" onclick="exportDashboardData('month')">Download Month</button>
+        <button class="btn btn-secondary btn-sm" onclick="toggleView()">Toggle View</button>
+      </div>
+      
       <!-- Summary Cards -->
       <div class="row mb-3">
         <div class="col-md-3">
@@ -511,18 +523,18 @@
         <div class="col-md-3">
           <div class="card text-white bg-success">
             <div class="card-body">
-              <h5 class="card-title">Total Profit</h5>
-              <h2 id="totalProfit">₹0.00</h2>
-              <p class="card-text"><span id="profitChange">0%</span> vs previous period</p>
+              <h5 class="card-title">Total Quantity</h5>
+              <h2 id="totalQuantity">0</h2>
+              <p class="card-text"><span id="quantityChange">0%</span> vs previous period</p>
             </div>
           </div>
         </div>
         <div class="col-md-3">
           <div class="card text-white bg-info">
             <div class="card-body">
-              <h5 class="card-title">Transactions</h5>
-              <h2 id="totalTransactions">0</h2>
-              <p class="card-text"><span id="transactionsChange">0%</span> vs previous period</p>
+              <h5 class="card-title">Products Sold</h5>
+              <h2 id="totalProducts">0</h2>
+              <p class="card-text"><span id="productsChange">0%</span> vs previous period</p>
             </div>
           </div>
         </div>
@@ -536,72 +548,195 @@
           </div>
         </div>
       </div>
-      
-      <!-- Charts Row -->
-      <div class="row mb-3">
-        <div class="col-md-8">
-          <div class="card">
-            <div class="card-header">
-              <h5>Sales Trend</h5>
-            </div>
-            <div class="card-body">
-              <canvas id="salesTrendChart" height="250"></canvas>
+
+      <!-- Product/Quantity Toggle View -->
+      <div id="productView">
+        <div class="row mb-3">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between">
+                <h5>Sales Trend</h5>
+                <div>
+                  <button class="btn btn-sm btn-outline-secondary" onclick="toggleChartType('sales')">
+                    <i class="bi bi-bar-chart"></i> Toggle Chart
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <canvas id="salesTrendChart" height="250"></canvas>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-header">
-              <h5>Top Products</h5>
-            </div>
-            <div class="card-body">
-              <canvas id="topProductsChart" height="250"></canvas>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">
+                <h5>Top Products by Revenue</h5>
+              </div>
+              <div class="card-body">
+                <canvas id="topProductsChart" height="250"></canvas>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      
-      <!-- Bottom Row -->
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              <h5>Recent Transactions</h5>
+
+      <div id="quantityView" style="display:none;">
+        <div class="row mb-3">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between">
+                <h5>Quantity Trend</h5>
+                <div>
+                  <button class="btn btn-sm btn-outline-secondary" onclick="toggleChartType('quantity')">
+                    <i class="bi bi-bar-chart"></i> Toggle Chart
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <canvas id="quantityTrendChart" height="250"></canvas>
+              </div>
             </div>
-            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
-              <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th>Time</th>
-                    <th>Dealer</th>
-                    <th>Amount</th>
-                  </tr>
-                </thead>
-                <tbody id="recentTransactions">
-                  <!-- Will be populated by JavaScript -->
-                </tbody>
-              </table>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">
+                <h5>Top Products by Quantity</h5>
+              </div>
+              <div class="card-body">
+                <canvas id="topQuantityChart" height="250"></canvas>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Detailed Tables -->
+      <div class="row mb-3">
         <div class="col-md-6">
           <div class="card">
             <div class="card-header">
-              <h5>Stock Alerts</h5>
+              <h5>Product Performance</h5>
             </div>
             <div class="card-body" style="max-height: 300px; overflow-y: auto;">
               <table class="table table-sm">
                 <thead>
                   <tr>
                     <th>Product</th>
-                    <th>Stock</th>
-                    <th>Status</th>
+                    <th>Size</th>
+                    <th>Qty</th>
+                    <th>Revenue</th>
+                    <th>% of Total</th>
                   </tr>
                 </thead>
-                <tbody id="stockAlerts">
+                <tbody id="productPerformance">
                   <!-- Will be populated by JavaScript -->
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h5>Daily Summary</h5>
+            </div>
+            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Invoices</th>
+                    <th>Qty</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody id="dailySummary">
+                  <!-- Will be populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Operator Sales Tab -->
+    <div class="tab-pane fade" id="operatorSalesTab">
+      <h3>Van Operator Sales Performance</h3>
+      
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <select id="operatorSelect" class="form-select">
+            <option value="all">All Operators</option>
+            <!-- Will be populated dynamically -->
+          </select>
+        </div>
+        <div class="col-md-4">
+          <select id="productFilter" class="form-select">
+            <option value="all">All Products</option>
+            <!-- Will be populated dynamically -->
+          </select>
+        </div>
+        <div class="col-md-4">
+          <select id="timePeriodFilter" class="form-select">
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month" selected>This Month</option>
+            <option value="quarter">This Quarter</option>
+            <option value="year">This Year</option>
+            <option value="custom">Custom Range</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="row mb-3" id="customDateRangeOperator" style="display:none;">
+        <div class="col-md-6">
+          <input type="date" id="operatorStartDate" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <input type="date" id="operatorEndDate" class="form-control">
+        </div>
+      </div>
+      
+      <div class="mb-3">
+        <button class="btn btn-primary" onclick="loadOperatorSales()">Apply Filters</button>
+        <button class="btn btn-success" onclick="exportOperatorSales()">Export Data</button>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h5>Product-wise Sales by Operator</h5>
+        </div>
+        <div class="card-body" style="overflow-x: auto;">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Operator</th>
+                <th>Product</th>
+                <th>Size</th>
+                <th>Quantity Sold</th>
+                <th>Total Revenue</th>
+                <th>% of Operator Sales</th>
+              </tr>
+            </thead>
+            <tbody id="operatorSalesBody">
+              <!-- Will be populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5>Sales Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <canvas id="operatorProductChart" height="300"></canvas>
+            </div>
+            <div class="col-md-6">
+              <canvas id="operatorPerformanceChart" height="300"></canvas>
             </div>
           </div>
         </div>
@@ -669,7 +804,13 @@
   const offlineStockRequests = JSON.parse(localStorage.getItem('offlineStockRequests')) || [];
   const draftInvoices = JSON.parse(localStorage.getItem('draftInvoices')) || [];
   let salesTrendChart = null;
+  let quantityTrendChart = null;
   let topProductsChart = null;
+  let topQuantityChart = null;
+  let operatorProductChart = null;
+  let operatorPerformanceChart = null;
+  let currentView = 'product'; // 'product' or 'quantity'
+  let currentChartType = { sales: 'line', quantity: 'line' };
 
   // Initialize the app
   function initApp() {
@@ -695,6 +836,13 @@
     
     document.getElementById('dashboardStartDate').valueAsDate = oneWeekAgo;
     document.getElementById('dashboardEndDate').valueAsDate = today;
+    document.getElementById('operatorStartDate').valueAsDate = oneWeekAgo;
+    document.getElementById('operatorEndDate').valueAsDate = today;
+    
+    // Initialize operator sales tab when shown
+    document.getElementById('operatorSalesTab').addEventListener('shown.bs.tab', function() {
+      initOperatorSalesTab();
+    });
     
     // Check if user is already logged in
     onAuthStateChanged(auth, (user) => {
@@ -708,6 +856,358 @@
       console.error("Auth state error:", error);
       alert("Authentication error: " + error.message);
     });
+  }
+
+  // Initialize operator sales tab
+  async function initOperatorSalesTab() {
+    // Populate operator dropdown
+    const operatorSelect = document.getElementById('operatorSelect');
+    operatorSelect.innerHTML = '<option value="all">All Operators</option>';
+    
+    // Populate product filter
+    const productFilter = document.getElementById('productFilter');
+    productFilter.innerHTML = '<option value="all">All Products</option>';
+    
+    // Setup event listeners
+    document.getElementById('timePeriodFilter').addEventListener('change', function() {
+      const isCustom = this.value === 'custom';
+      document.getElementById('customDateRangeOperator').style.display = isCustom ? 'flex' : 'none';
+    });
+    
+    // Load initial data
+    await loadOperators();
+    await loadProducts();
+    loadOperatorSales();
+  }
+
+  // Load operators list
+  async function loadOperators() {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'vanStock'));
+      const operatorSelect = document.getElementById('operatorSelect');
+      
+      querySnapshot.forEach(doc => {
+        // Get operator email from vanStock document ID (assuming ID is operator UID)
+        // You might need to store operator emails in vanStock documents for better display
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = doc.id.substring(0, 8) + '...'; // Shorten for display
+        operatorSelect.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Error loading operators:", error);
+    }
+  }
+
+  // Load products list
+  async function loadProducts() {
+    try {
+      const warehouseRef = doc(db, 'warehouse', 'stock');
+      const warehouseSnap = await getDoc(warehouseRef);
+      const productFilter = document.getElementById('productFilter');
+      
+      if (warehouseSnap.exists()) {
+        const warehouseData = warehouseSnap.data();
+        
+        for (const key in warehouseData) {
+          const [name, size] = key.split('|');
+          const option = document.createElement('option');
+          option.value = key;
+          option.textContent = `${name} (${size})`;
+          productFilter.appendChild(option);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading products:", error);
+    }
+  }
+
+  // Main function to load operator sales data
+  async function loadOperatorSales() {
+    try {
+      // Get filter values
+      const operatorId = document.getElementById('operatorSelect').value;
+      const productFilter = document.getElementById('productFilter').value;
+      const timePeriod = document.getElementById('timePeriodFilter').value;
+      
+      // Determine date range
+      let startDate, endDate = new Date();
+      endDate.setHours(23, 59, 59, 999);
+      
+      if (timePeriod === 'custom') {
+        startDate = new Date(document.getElementById('operatorStartDate').value);
+        endDate = new Date(document.getElementById('operatorEndDate').value);
+        endDate.setHours(23, 59, 59, 999);
+      } else {
+        startDate = calculateStartDate(timePeriod);
+      }
+      
+      // Build the Firestore query
+      let invoicesQuery = query(
+        collection(db, 'invoices'),
+        where('invoiceDate', '>=', startDate),
+        where('invoiceDate', '<=', endDate),
+        where('status', '==', 'approved')
+      );
+      
+      // Add operator filter if not "all"
+      if (operatorId !== 'all') {
+        invoicesQuery = query(invoicesQuery, where('createdByUid', '==', operatorId));
+      }
+      
+      const querySnapshot = await getDocs(invoicesQuery);
+      
+      // Process the data
+      const operatorSales = {};
+      const productSales = {};
+      let totalQuantity = 0;
+      let totalRevenue = 0;
+      
+      querySnapshot.forEach(doc => {
+        const invoice = doc.data();
+        const operatorKey = invoice.createdByUid || invoice.createdBy; // Fallback to email if UID not available
+        
+        if (!operatorSales[operatorKey]) {
+          operatorSales[operatorKey] = {
+            email: invoice.createdBy,
+            products: {},
+            totalQuantity: 0,
+            totalRevenue: 0
+          };
+        }
+        
+        invoice.items.forEach(item => {
+          const productKey = `${item.name}|${item.size}`;
+          
+          // Apply product filter if not "all"
+          if (productFilter === 'all' || productFilter === productKey) {
+            // Update operator sales
+            if (!operatorSales[operatorKey].products[productKey]) {
+              operatorSales[operatorKey].products[productKey] = {
+                name: item.name,
+                size: item.size,
+                quantity: 0,
+                revenue: 0
+              };
+            }
+            
+            operatorSales[operatorKey].products[productKey].quantity += item.qty;
+            operatorSales[operatorKey].products[productKey].revenue += item.amount;
+            operatorSales[operatorKey].totalQuantity += item.qty;
+            operatorSales[operatorKey].totalRevenue += item.amount;
+            
+            // Update global product sales
+            if (!productSales[productKey]) {
+              productSales[productKey] = {
+                name: item.name,
+                size: item.size,
+                quantity: 0,
+                revenue: 0
+              };
+            }
+            
+            productSales[productKey].quantity += item.qty;
+            productSales[productKey].revenue += item.amount;
+            
+            // Update totals
+            totalQuantity += item.qty;
+            totalRevenue += item.amount;
+          }
+        });
+      });
+      
+      // Update the table
+      updateOperatorSalesTable(operatorSales);
+      
+      // Update the charts
+      updateOperatorCharts(operatorSales, productSales);
+      
+    } catch (error) {
+      console.error("Error loading operator sales:", error);
+      alert("Error loading operator sales data: " + error.message);
+    }
+  }
+
+  function calculateStartDate(timePeriod) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    switch(timePeriod) {
+      case 'today':
+        return today;
+      case 'week':
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+        return weekStart;
+      case 'month':
+        return new Date(today.getFullYear(), today.getMonth(), 1);
+      case 'quarter':
+        const quarter = Math.floor(today.getMonth() / 3);
+        return new Date(today.getFullYear(), quarter * 3, 1);
+      case 'year':
+        return new Date(today.getFullYear(), 0, 1);
+      default:
+        return new Date(0); // All time
+    }
+  }
+
+  function updateOperatorSalesTable(operatorSales) {
+    const tbody = document.getElementById('operatorSalesBody');
+    tbody.innerHTML = '';
+    
+    for (const operatorId in operatorSales) {
+      const operator = operatorSales[operatorId];
+      
+      for (const productKey in operator.products) {
+        const product = operator.products[productKey];
+        const percentage = operator.totalRevenue > 0 
+          ? (product.revenue / operator.totalRevenue * 100) 
+          : 0;
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${operator.email}</td>
+          <td>${product.name}</td>
+          <td>${product.size}</td>
+          <td>${product.quantity}</td>
+          <td>₹${product.revenue.toFixed(2)}</td>
+          <td>${percentage.toFixed(1)}%</td>
+        `;
+        tbody.appendChild(row);
+      }
+    }
+    
+    if (tbody.children.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center">No sales data found for selected filters</td></tr>';
+    }
+  }
+
+  function updateOperatorCharts(operatorSales, productSales) {
+    // Operator Performance Chart (Top operators by quantity)
+    const operatorsArray = Object.values(operatorSales)
+      .sort((a, b) => b.totalQuantity - a.totalQuantity)
+      .slice(0, 5);
+    
+    const operatorLabels = operatorsArray.map(op => op.email.substring(0, 8) + '...');
+    const operatorQuantities = operatorsArray.map(op => op.totalQuantity);
+    
+    // Product Performance Chart (Top products across all operators)
+    const productsArray = Object.values(productSales)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 5);
+    
+    const productLabels = productsArray.map(p => `${p.name} (${p.size})`);
+    const productQuantities = productsArray.map(p => p.quantity);
+    
+    // Destroy previous charts if they exist
+    if (operatorPerformanceChart) {
+      operatorPerformanceChart.destroy();
+    }
+    if (operatorProductChart) {
+      operatorProductChart.destroy();
+    }
+    
+    // Create Operator Performance Chart
+    const operatorCtx = document.getElementById('operatorPerformanceChart').getContext('2d');
+    operatorPerformanceChart = new Chart(operatorCtx, {
+      type: 'bar',
+      data: {
+        labels: operatorLabels,
+        datasets: [{
+          label: 'Quantity Sold',
+          data: operatorQuantities,
+          backgroundColor: 'rgba(54, 162, 235, 0.7)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Top Operators by Quantity'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Items Sold'
+            }
+          }
+        }
+      }
+    });
+    
+    // Create Product Performance Chart
+    const productCtx = document.getElementById('operatorProductChart').getContext('2d');
+    operatorProductChart = new Chart(productCtx, {
+      type: 'pie',
+      data: {
+        labels: productLabels,
+        datasets: [{
+          data: productQuantities,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Top Products Across Operators'
+          }
+        }
+      }
+    });
+  }
+
+  // Export operator sales data
+  async function exportOperatorSales() {
+    try {
+      // Get the current table data
+      const rows = document.getElementById('operatorSalesBody').querySelectorAll('tr');
+      
+      // Prepare CSV content
+      let csv = 'Operator,Product,Size,Quantity Sold,Total Revenue,% of Operator Sales\n';
+      
+      rows.forEach(row => {
+        if (row.cells.length === 6) { // Skip the "no data" row
+          const cells = Array.from(row.cells).map(cell => {
+            // Handle currency values (remove ₹ symbol)
+            return cell.textContent.replace('₹', '').trim();
+          });
+          csv += cells.join(',') + '\n';
+        }
+      });
+      
+      // Create download link
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      
+      // Generate filename based on filters
+      const operator = document.getElementById('operatorSelect').value === 'all' ? 'all-operators' : document.getElementById('operatorSelect').value;
+      const product = document.getElementById('productFilter').value === 'all' ? 'all-products' : document.getElementById('productFilter').value;
+      const period = document.getElementById('timePeriodFilter').value;
+      
+      a.download = `operator-sales_${operator}_${product}_${period}_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      
+    } catch (error) {
+      console.error("Error exporting operator sales:", error);
+      alert("Error exporting data: " + error.message);
+    }
   }
 
   // Handle connection changes
@@ -766,25 +1266,6 @@
     } else {
       loadPendingStockRequests();
     }
-  }
-  function refreshCurrentTab() {
-  const activeTab = document.querySelector('.nav-tabs .nav-link.active');
-  if (activeTab) {
-    const tabId = activeTab.getAttribute('href');
-    if (tabId === '#invoiceTab') {
-      // Refresh invoice tab if needed
-    } else if (tabId === '#stockTab') {
-      loadVanStock();
-      loadPendingRequests();
-    } else if (tabId === '#adminTab') {
-      loadPendingApprovals();
-      loadPendingStockRequests();
-      loadWarehouseStock();
-      loadRecentInvoices();
-    } else if (tabId === '#dashboardTab') {
-      loadDashboardData();
-    }
-  }
   }
 
   // Create invoice modal for detailed view
@@ -1083,6 +1564,7 @@
       total,
       status: currentUser.email === 'admin@campabeverages.com' ? 'approved' : 'pending',
       createdBy: currentUser.email,
+      createdByUid: currentUser.uid,
       createdAt: serverTimestamp(),
       isOffline: !isOnline
     };
@@ -1391,12 +1873,22 @@
     }
     
     allRequests.forEach(request => {
+      let displayDate = 'N/A';
+      try {
+        if (request.timestamp) {
+          const dateObj = request.timestamp.toDate ? request.timestamp.toDate() : new Date(request.timestamp);
+          displayDate = dateObj.toLocaleDateString();
+        }
+      } catch (e) {
+        console.error("Error formatting date:", e);
+      }
+
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${request.product.name}</td>
         <td>${request.product.size}</td>
         <td>${request.quantity}</td>
-        <td>${new Date(request.timestamp).toLocaleDateString()}</td>
+        <td>${displayDate}</td>
         <td>${request.status} ${request.isOffline ? '(Offline)' : ''}</td>
       `;
       pendingRequestsBody.appendChild(row);
@@ -1474,7 +1966,7 @@
               <h5 class="mb-1">${request.product.name} (${request.product.size})</h5>
               <p class="mb-1">Operator: ${request.operatorEmail}</p>
               <p class="mb-1">Qty: ${request.quantity}</p>
-              <p class="mb-1">Date: ${new Date(request.timestamp).toLocaleDateString()}</p>
+              <p class="mb-1">Date: ${request.timestamp ? new Date(request.timestamp).toLocaleDateString() : 'N/A'}</p>
               ${isOffline ? '<p class="text-warning mb-1">Offline Request</p>' : ''}
               <button onclick="approveStockRequest('${requestId}', '${request.operatorId}', 
                 '${request.product.name}', '${request.product.size}', ${request.quantity}, ${isOffline})" 
@@ -1846,6 +2338,31 @@
     }
   });
 
+  // Toggle between product and quantity views
+  function toggleView() {
+    const productView = document.getElementById('productView');
+    const quantityView = document.getElementById('quantityView');
+    
+    if (currentView === 'product') {
+      productView.style.display = 'none';
+      quantityView.style.display = 'block';
+      currentView = 'quantity';
+    } else {
+      productView.style.display = 'block';
+      quantityView.style.display = 'none';
+      currentView = 'product';
+    }
+    
+    // Redraw charts for the current view
+    loadDashboardData();
+  }
+
+  // Toggle chart type (line/bar)
+  function toggleChartType(chartGroup) {
+    currentChartType[chartGroup] = currentChartType[chartGroup] === 'line' ? 'bar' : 'line';
+    loadDashboardData();
+  }
+
   async function loadDashboardData() {
     try {
       const timeRange = document.getElementById('dashboardTimeRange').value;
@@ -1957,11 +2474,15 @@
   async function getDashboardData(startDate, endDate) {
     const result = {
       totalSales: 0,
-      totalProfit: 0,
+      totalQuantity: 0,
+      totalProducts: 0,
       transactionCount: 0,
       salesByDay: {},
+      quantityByDay: {},
       salesByProduct: {},
-      recentTransactions: []
+      quantityByProduct: {},
+      recentTransactions: [],
+      dailySummaries: []
     };
     
     // Get invoices for the period
@@ -1979,20 +2500,42 @@
     // Process each invoice
     invoicesSnapshot.forEach(doc => {
       const invoice = doc.data();
+      const invoiceDate = invoice.invoiceDate.toDate();
+      const dayKey = invoiceDate.toLocaleDateString();
+      
       result.totalSales += invoice.total;
       
-      // Calculate profit (20% for demo - replace with your actual profit calculation)
-      result.totalProfit += invoice.subtotal * 0.20;
-      
-      // Group sales by day
-      const day = invoice.invoiceDate.toDate().toLocaleDateString();
-      if (!result.salesByDay[day]) {
-        result.salesByDay[day] = 0;
+      // Initialize daily summaries if not exists
+      if (!result.dailySummaries.find(d => d.date === dayKey)) {
+        result.dailySummaries.push({
+          date: dayKey,
+          invoices: 0,
+          quantity: 0,
+          revenue: 0
+        });
       }
-      result.salesByDay[day] += invoice.total;
       
-      // Group sales by product
+      // Update daily summary
+      const dailySummary = result.dailySummaries.find(d => d.date === dayKey);
+      dailySummary.invoices += 1;
+      dailySummary.revenue += invoice.total;
+      
+      // Process items
       invoice.items.forEach(item => {
+        const productQty = item.qty;
+        result.totalQuantity += productQty;
+        result.totalProducts += 1;
+        dailySummary.quantity += productQty;
+        
+        // Group by day
+        if (!result.salesByDay[dayKey]) {
+          result.salesByDay[dayKey] = 0;
+          result.quantityByDay[dayKey] = 0;
+        }
+        result.salesByDay[dayKey] += item.amount;
+        result.quantityByDay[dayKey] += productQty;
+        
+        // Group by product
         const productKey = `${item.name}|${item.size}`;
         if (!result.salesByProduct[productKey]) {
           result.salesByProduct[productKey] = {
@@ -2001,28 +2544,39 @@
             quantity: 0,
             sales: 0
           };
+          result.quantityByProduct[productKey] = {
+            name: item.name,
+            size: item.size,
+            quantity: 0,
+            sales: 0
+          };
         }
-        result.salesByProduct[productKey].quantity += item.qty;
+        result.salesByProduct[productKey].quantity += productQty;
         result.salesByProduct[productKey].sales += item.amount;
+        result.quantityByProduct[productKey].quantity += productQty;
+        result.quantityByProduct[productKey].sales += item.amount;
       });
       
       // Add to recent transactions
       if (result.recentTransactions.length < 5) {
         result.recentTransactions.push({
-          time: invoice.invoiceDate.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          time: invoiceDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           dealer: invoice.dealer.name,
           amount: invoice.total
         });
       }
     });
     
+    // Sort daily summaries by date
+    result.dailySummaries.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
     return result;
   }
 
   function updateSummaryCards(currentData, previousData = {}) {
     document.getElementById('totalSales').textContent = `₹${currentData.totalSales.toFixed(2)}`;
-    document.getElementById('totalProfit').textContent = `₹${currentData.totalProfit.toFixed(2)}`;
-    document.getElementById('totalTransactions').textContent = currentData.transactionCount;
+    document.getElementById('totalQuantity').textContent = currentData.totalQuantity;
+    document.getElementById('totalProducts').textContent = Object.keys(currentData.salesByProduct).length;
     
     const avgSale = currentData.transactionCount > 0 
       ? currentData.totalSales / currentData.transactionCount 
@@ -2031,55 +2585,81 @@
     
     // Calculate changes vs previous period if available
     if (previousData.totalSales !== undefined) {
-      const salesChange = previousData.totalSales > 0 
-        ? ((currentData.totalSales - previousData.totalSales) / previousData.totalSales) * 100 
-        : currentData.totalSales > 0 ? 100 : 0;
-      document.getElementById('salesChange').textContent = `${salesChange.toFixed(1)}%`;
-      document.getElementById('salesChange').className = salesChange >= 0 ? 'text-success' : 'text-danger';
-      
-      const profitChange = previousData.totalProfit > 0 
-        ? ((currentData.totalProfit - previousData.totalProfit) / previousData.totalProfit) * 100 
-        : currentData.totalProfit > 0 ? 100 : 0;
-      document.getElementById('profitChange').textContent = `${profitChange.toFixed(1)}%`;
-      document.getElementById('profitChange').className = profitChange >= 0 ? 'text-success' : 'text-danger';
-      
-      const transactionsChange = previousData.transactionCount > 0 
-        ? ((currentData.transactionCount - previousData.transactionCount) / previousData.transactionCount) * 100 
-        : currentData.transactionCount > 0 ? 100 : 0;
-      document.getElementById('transactionsChange').textContent = `${transactionsChange.toFixed(1)}%`;
-      document.getElementById('transactionsChange').className = transactionsChange >= 0 ? 'text-success' : 'text-danger';
+      updateChangeIndicator('sales', currentData.totalSales, previousData.totalSales);
+      updateChangeIndicator('quantity', currentData.totalQuantity, previousData.totalQuantity);
+      updateChangeIndicator('products', Object.keys(currentData.salesByProduct).length, 
+        Object.keys(previousData.salesByProduct || {}).length);
       
       const prevAvgSale = previousData.transactionCount > 0 
         ? previousData.totalSales / previousData.transactionCount 
         : 0;
-      const avgSaleChange = prevAvgSale > 0 
-        ? ((avgSale - prevAvgSale) / prevAvgSale) * 100 
-        : avgSale > 0 ? 100 : 0;
-      document.getElementById('avgSaleChange').textContent = `${avgSaleChange.toFixed(1)}%`;
-      document.getElementById('avgSaleChange').className = avgSaleChange >= 0 ? 'text-success' : 'text-danger';
+      updateChangeIndicator('avgSale', avgSale, prevAvgSale);
     }
   }
 
+  function updateChangeIndicator(field, current, previous) {
+    const change = previous > 0 
+      ? ((current - previous) / previous) * 100 
+      : current > 0 ? 100 : 0;
+    
+    const element = document.getElementById(`${field}Change`);
+    element.textContent = `${change.toFixed(1)}%`;
+    element.className = change >= 0 ? 'text-success' : 'text-danger';
+  }
+
   function updateCharts(data) {
-    // Sales trend chart (by day)
+    // Sales Trend Chart
     const days = Object.keys(data.salesByDay);
     const salesData = days.map(day => data.salesByDay[day]);
+    const quantityData = days.map(day => data.quantityByDay[day]);
     
-    if (salesTrendChart) {
+    updateTrendChart('salesTrendChart', days, salesData, 'Daily Sales', 'Revenue (₹)', currentChartType.sales);
+    updateTrendChart('quantityTrendChart', days, quantityData, 'Daily Quantity', 'Items Sold', currentChartType.quantity);
+    
+    // Top Products Charts
+    const topProductsByRevenue = Object.values(data.salesByProduct)
+      .sort((a, b) => b.sales - a.sales)
+      .slice(0, 5);
+    
+    const topProductsByQuantity = Object.values(data.quantityByProduct)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 5);
+    
+    updateTopProductsChart('topProductsChart', 
+      topProductsByRevenue.map(p => `${p.name} (${p.size})`),
+      topProductsByRevenue.map(p => p.sales),
+      'Top Products by Revenue');
+    
+    updateTopProductsChart('topQuantityChart', 
+      topProductsByQuantity.map(p => `${p.name} (${p.size})`),
+      topProductsByQuantity.map(p => p.quantity),
+      'Top Products by Quantity');
+    
+    // Update tables
+    updateProductPerformanceTable(data.salesByProduct);
+    updateDailySummaryTable(data.dailySummaries);
+  }
+
+  function updateTrendChart(canvasId, labels, data, label, yLabel, chartType) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    
+    // Destroy previous chart if exists
+    if (canvasId === 'salesTrendChart' && salesTrendChart) {
       salesTrendChart.destroy();
+    } else if (canvasId === 'quantityTrendChart' && quantityTrendChart) {
+      quantityTrendChart.destroy();
     }
     
-    const salesCtx = document.getElementById('salesTrendChart').getContext('2d');
-    salesTrendChart = new Chart(salesCtx, {
-      type: 'line',
+    const newChart = new Chart(ctx, {
+      type: chartType,
       data: {
-        labels: days,
+        labels: labels,
         datasets: [{
-          label: 'Daily Sales',
-          data: salesData,
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          label: label,
+          data: data,
+          backgroundColor: chartType === 'bar' ? 'rgba(54, 162, 235, 0.7)' : 'rgba(54, 162, 235, 0.2)',
           borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 2,
+          borderWidth: chartType === 'bar' ? 1 : 2,
           tension: 0.1
         }]
       },
@@ -2092,31 +2672,39 @@
         },
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: yLabel
+            }
           }
         }
       }
     });
     
-    // Top products chart
-    const products = Object.values(data.salesByProduct)
-      .sort((a, b) => b.sales - a.sales)
-      .slice(0, 5);
+    if (canvasId === 'salesTrendChart') {
+      salesTrendChart = newChart;
+    } else {
+      quantityTrendChart = newChart;
+    }
+  }
+
+  function updateTopProductsChart(canvasId, labels, data, title) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
     
-    const productNames = products.map(p => `${p.name} (${p.size})`);
-    const productSales = products.map(p => p.sales);
-    
-    if (topProductsChart) {
+    // Destroy previous chart if exists
+    if (canvasId === 'topProductsChart' && topProductsChart) {
       topProductsChart.destroy();
+    } else if (canvasId === 'topQuantityChart' && topQuantityChart) {
+      topQuantityChart.destroy();
     }
     
-    const productsCtx = document.getElementById('topProductsChart').getContext('2d');
-    topProductsChart = new Chart(productsCtx, {
+    const newChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: productNames,
+        labels: labels,
         datasets: [{
-          data: productSales,
+          data: data,
           backgroundColor: [
             'rgba(255, 99, 132, 0.7)',
             'rgba(54, 162, 235, 0.7)',
@@ -2132,9 +2720,61 @@
         plugins: {
           legend: {
             position: 'bottom'
+          },
+          title: {
+            display: true,
+            text: title
           }
         }
       }
+    });
+    
+    if (canvasId === 'topProductsChart') {
+      topProductsChart = newChart;
+    } else {
+      topQuantityChart = newChart;
+    }
+  }
+
+  // Table update functions
+  function updateProductPerformanceTable(productsData) {
+    const tbody = document.getElementById('productPerformance');
+    tbody.innerHTML = '';
+    
+    const productsArray = Object.values(productsData);
+    const totalSales = productsArray.reduce((sum, p) => sum + p.sales, 0);
+    
+    // Sort by revenue descending
+    productsArray.sort((a, b) => b.sales - a.sales);
+    
+    productsArray.forEach(product => {
+      const percentage = totalSales > 0 ? (product.sales / totalSales * 100) : 0;
+      
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${product.name}</td>
+        <td>${product.size}</td>
+        <td>${product.quantity}</td>
+        <td>₹${product.sales.toFixed(2)}</td>
+        <td>${percentage.toFixed(1)}%</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function updateDailySummaryTable(dailySummaries) {
+    const tbody = document.getElementById('dailySummary');
+    tbody.innerHTML = '';
+    
+    dailySummaries.forEach(day => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${day.date}</td>
+        <td>${day.invoices}</td>
+        <td>${day.quantity}</td>
+        <td>₹${day.revenue.toFixed(2)}</td>
+      `;
+      tbody.appendChild(row);
     });
   }
 
@@ -2192,6 +2832,93 @@
     }
   }
 
+  // Export dashboard data
+  async function exportDashboardData(range) {
+    try {
+      // Determine date range
+      let startDate, endDate = new Date();
+      endDate.setHours(23, 59, 59, 999);
+      
+      switch(range) {
+        case 'today':
+          startDate = new Date();
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'week':
+          startDate = new Date();
+          startDate.setDate(endDate.getDate() - endDate.getDay()); // Start of week (Sunday)
+          break;
+        case 'month':
+          startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+          break;
+        default:
+          startDate = new Date(0); // All time
+      }
+      
+      // Get data
+      const data = await getDashboardData(startDate, endDate);
+      
+      // Prepare data for export
+      const exportData = {
+        summary: {
+          totalSales: data.totalSales,
+          totalQuantity: data.totalQuantity,
+          totalProducts: Object.keys(data.salesByProduct).length,
+          transactionCount: data.transactionCount
+        },
+        products: Object.values(data.salesByProduct)
+          .sort((a, b) => b.sales - a.sales)
+          .map(p => ({
+            product: `${p.name} (${p.size})`,
+            quantity: p.quantity,
+            revenue: p.sales
+          })),
+        dailySummary: data.dailySummaries
+      };
+      
+      // Create CSV
+      let csv = 'Category,Details\n';
+      csv += `Period,${range}\n`;
+      csv += `Start Date,${startDate.toLocaleDateString()}\n`;
+      csv += `End Date,${endDate.toLocaleDateString()}\n\n`;
+      
+      // Summary section
+      csv += 'SUMMARY\n';
+      csv += 'Metric,Value\n';
+      csv += `Total Sales,${exportData.summary.totalSales.toFixed(2)}\n`;
+      csv += `Total Quantity,${exportData.summary.totalQuantity}\n`;
+      csv += `Unique Products,${exportData.summary.totalProducts}\n`;
+      csv += `Transactions,${exportData.summary.transactionCount}\n\n`;
+      
+      // Products section
+      csv += 'PRODUCT PERFORMANCE\n';
+      csv += 'Product,Quantity,Revenue\n';
+      exportData.products.forEach(p => {
+        csv += `${p.product},${p.quantity},${p.revenue.toFixed(2)}\n`;
+      });
+      csv += '\n';
+      
+      // Daily summary
+      csv += 'DAILY SUMMARY\n';
+      csv += 'Date,Invoices,Quantity,Revenue\n';
+      exportData.dailySummary.forEach(d => {
+        csv += `${d.date},${d.invoices},${d.quantity},${d.revenue.toFixed(2)}\n`;
+      });
+      
+      // Download CSV
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `campa_sales_${range}_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      alert('Error exporting data: ' + error.message);
+    }
+  }
+
   // Expose functions to global scope
   window.login = login;
   window.logout = logout;
@@ -2210,6 +2937,11 @@
   window.exportInvoices = exportInvoices;
   window.updateWarehouseStock = updateWarehouseStock;
   window.loadDashboardData = loadDashboardData;
+  window.toggleView = toggleView;
+  window.toggleChartType = toggleChartType;
+  window.loadOperatorSales = loadOperatorSales;
+  window.exportOperatorSales = exportOperatorSales;
+  window.exportDashboardData = exportDashboardData;
 
   // Initialize the app when page loads
   window.onload = initApp;
