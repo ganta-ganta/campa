@@ -618,13 +618,13 @@
 <!-- Firebase SDK -->
 <script type="module">
   // Import Firebase modules
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
   import { 
     getAuth, 
     signInWithEmailAndPassword, 
     signOut,
     onAuthStateChanged 
-  } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
   import { 
     getFirestore,
     collection,
@@ -640,7 +640,7 @@
     getDocs,
     serverTimestamp,
     onSnapshot
-  } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+  } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
   // Your Firebase configuration
   const firebaseConfig = {
@@ -695,7 +695,6 @@
     
     document.getElementById('dashboardStartDate').valueAsDate = oneWeekAgo;
     document.getElementById('dashboardEndDate').valueAsDate = today;
-    document.getElementById('dashboardMonth').value = today.getMonth() + 1;
     
     // Check if user is already logged in
     onAuthStateChanged(auth, (user) => {
@@ -705,6 +704,9 @@
         document.getElementById('appContainer').classList.remove('hidden');
         document.getElementById('loginPage').classList.add('hidden');
       }
+    }, (error) => {
+      console.error("Auth state error:", error);
+      alert("Authentication error: " + error.message);
     });
   }
 
@@ -799,9 +801,12 @@
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       currentUser = userCredential.user;
+      document.getElementById('appContainer').classList.remove('hidden');
+      document.getElementById('loginPage').classList.add('hidden');
       loadUserData();
     } catch (error) {
       alert('Login failed: ' + error.message);
+      console.error("Login error:", error);
     }
   }
 
@@ -811,6 +816,8 @@
       currentUser = null;
       document.getElementById('appContainer').classList.add('hidden');
       document.getElementById('loginPage').classList.remove('hidden');
+    }).catch((error) => {
+      console.error("Logout error:", error);
     });
   }
 
@@ -865,9 +872,14 @@
       if (vanStockDoc.exists()) {
         vanStock = vanStockDoc.data().stock || {};
         updateVanStockDisplay();
+      } else {
+        // Initialize empty stock if none exists
+        vanStock = {};
+        updateVanStockDisplay();
       }
     } catch (error) {
       console.error("Error loading van stock:", error);
+      alert("Error loading van stock: " + error.message);
     }
     
     // Load pending stock requests
@@ -908,6 +920,7 @@
       }
     } catch (error) {
       console.error("Error loading warehouse stock:", error);
+      alert("Error loading warehouse stock: " + error.message);
     }
   }
 
@@ -917,9 +930,14 @@
       const counterDoc = await getDoc(doc(db, 'counters', 'invoiceCounter'));
       if (counterDoc.exists()) {
         invoiceCounter = counterDoc.data().value;
+      } else {
+        // Initialize counter if it doesn't exist
+        invoiceCounter = 0;
+        await setDoc(doc(db, 'counters', 'invoiceCounter'), { value: invoiceCounter });
       }
     } catch (error) {
       console.error("Error loading invoice counter:", error);
+      invoiceCounter = 0;
     }
     
     const now = new Date();
@@ -1070,6 +1088,7 @@
         alert('Invoice saved successfully!');
         resetInvoiceForm();
       } catch (error) {
+        console.error("Error saving invoice:", error);
         // Fallback to offline
         saveInvoiceOffline(invoiceData);
       }
@@ -1200,6 +1219,7 @@
         alert('Stock request submitted for admin approval');
         loadPendingStockRequests();
       } catch (error) {
+        console.error("Error saving stock request:", error);
         saveStockRequestOffline(stockRequest);
       }
     } else {
@@ -1252,6 +1272,7 @@
       alert('Warehouse stock updated!');
       loadWarehouseStock();
     } catch (error) {
+      console.error("Error updating warehouse stock:", error);
       alert('Error updating warehouse: ' + error.message);
     }
   }
@@ -1398,6 +1419,7 @@
       document.getElementById('pendingApprovalsList').innerHTML = html;
     } catch (error) {
       console.error("Error loading pending approvals:", error);
+      alert("Error loading pending approvals: " + error.message);
     }
   }
 
@@ -1449,6 +1471,7 @@
       document.getElementById('pendingStockApprovals').innerHTML = html;
     } catch (error) {
       console.error("Error loading stock requests:", error);
+      alert("Error loading stock requests: " + error.message);
     }
   }
 
@@ -1480,6 +1503,7 @@
       document.getElementById('vanOperatorsSummary').innerHTML = html;
     } catch (error) {
       console.error("Error loading van operators summary:", error);
+      alert("Error loading van operators: " + error.message);
     }
   }
 
@@ -1513,6 +1537,7 @@
       document.getElementById('invoicesList').innerHTML = html;
     } catch (error) {
       console.error("Error loading recent invoices:", error);
+      alert("Error loading invoices: " + error.message);
     }
   }
 
@@ -1527,6 +1552,7 @@
       loadPendingApprovals();
       loadRecentInvoices();
     } catch (error) {
+      console.error("Error approving invoice:", error);
       alert('Error approving invoice: ' + error.message);
     }
   }
@@ -1542,6 +1568,7 @@
       loadPendingApprovals();
       loadRecentInvoices();
     } catch (error) {
+      console.error("Error rejecting invoice:", error);
       alert('Error rejecting invoice: ' + error.message);
     }
   }
@@ -1625,6 +1652,7 @@
       loadPendingStockApprovals();
       loadWarehouseStock();
     } catch (error) {
+      console.error("Error approving stock request:", error);
       alert('Error approving stock request: ' + error.message);
     }
   }
@@ -1649,6 +1677,7 @@
       alert('Stock request rejected!');
       loadPendingStockApprovals();
     } catch (error) {
+      console.error("Error rejecting stock request:", error);
       alert('Error rejecting stock request: ' + error.message);
     }
   }
@@ -1729,6 +1758,7 @@
         modal.show();
       }
     } catch (error) {
+      console.error("Error loading invoice:", error);
       alert('Error loading invoice: ' + error.message);
     }
   }
@@ -1777,6 +1807,7 @@
         XLSX.writeFile(wb, 'campa_invoices.xlsx');
       }
     } catch (error) {
+      console.error("Error exporting invoices:", error);
       alert('Error exporting invoices: ' + error.message);
     }
   }
