@@ -3682,6 +3682,37 @@ async function loadHistoryData() {
     }
   }
 
+  async function loadOperatorSales() {
+  try {
+    const operatorId = document.getElementById('operatorSelect').value;
+    const startDate = // get your start date;
+    const endDate = // get your end date;
+    
+    let q = query(
+      collection(db, 'invoices'),
+      where('invoiceDate', '>=', startDate),
+      where('invoiceDate', '<=', endDate),
+      where('status', '==', 'approved'),
+      orderBy('invoiceDate', 'desc')
+    );
+    
+    if (operatorId !== 'all') {
+      q = query(q, where('createdByUid', '==', operatorId));
+    }
+    
+    const querySnapshot = await getDocs(q);
+    // Process your data...
+    
+  } catch (error) {
+    console.error("Operator sales error:", error);
+    if (error.code === 'failed-precondition') {
+      alert("Database indexes are still building. Please try again in a few minutes.");
+    } else {
+      alert("Error loading operator sales");
+    }
+  }
+}
+
   // Expose functions to global scope
   window.login = login;
   window.logout = logout;
