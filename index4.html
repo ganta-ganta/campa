@@ -474,136 +474,182 @@
       </div>
     </div>
 
-    <!-- Dashboard Tab -->
-    <div class="tab-pane fade" id="dashboardTab">
-      <h3>Sales Dashboard</h3>
-      
-      <div class="row mb-3">
-        <div class="col-md-4">
-          <select id="dashboardTimeRange" class="form-select" onchange="loadDashboardData()">
-            <option value="today">Today</option>
-            <option value="week">This Week</option>
-            <option value="month" selected>This Month</option>
-            <option value="quarter">This Quarter</option>
-            <option value="year">This Year</option>
-            <option value="custom">Custom Range</option>
-          </select>
-        </div>
-        <div class="col-md-4" id="customDateRange" style="display:none;">
-          <input type="date" id="dashboardStartDate" class="form-control">
-        </div>
-        <div class="col-md-4" id="customDateRangeEnd" style="display:none;">
-          <input type="date" id="dashboardEndDate" class="form-control">
-        </div>
-      </div>
-      
-      <!-- Summary Cards -->
-      <div class="row mb-3">
-        <div class="col-md-3">
-          <div class="card text-white bg-primary">
-            <div class="card-body">
-              <h5 class="card-title">Total Sales</h5>
-              <h2 id="totalSales">₹0.00</h2>
-              <p class="card-text"><span id="salesChange">0%</span> vs previous period</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card text-white bg-success">
-            <div class="card-body">
-              <h5 class="card-title">Total Profit</h5>
-              <h2 id="totalProfit">₹0.00</h2>
-              <p class="card-text"><span id="profitChange">0%</span> vs previous period</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card text-white bg-info">
-            <div class="card-body">
-              <h5 class="card-title">Transactions</h5>
-              <h2 id="totalTransactions">0</h2>
-              <p class="card-text"><span id="transactionsChange">0%</span> vs previous period</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card text-white bg-warning">
-            <div class="card-body">
-              <h5 class="card-title">Avg. Sale</h5>
-              <h2 id="avgSale">₹0.00</h2>
-              <p class="card-text"><span id="avgSaleChange">0%</span> vs previous period</p>
-            </div>
-          </div>
+    <!-- Replace your current dashboard tab with this enhanced version -->
+<div class="tab-pane fade" id="dashboardTab">
+  <h3>Enhanced Sales Dashboard</h3>
+  
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <select id="dashboardTimeRange" class="form-select" onchange="loadDashboardData()">
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month" selected>This Month</option>
+        <option value="quarter">This Quarter</option>
+        <option value="year">This Year</option>
+        <option value="custom">Custom Range</option>
+      </select>
+    </div>
+    <div class="col-md-4" id="customDateRange" style="display:none;">
+      <input type="date" id="dashboardStartDate" class="form-control">
+    </div>
+    <div class="col-md-4" id="customDateRangeEnd" style="display:none;">
+      <input type="date" id="dashboardEndDate" class="form-control">
+    </div>
+  </div>
+
+  <!-- Download Buttons -->
+  <div class="mb-3">
+    <button class="btn btn-primary btn-sm" onclick="exportDashboardData('today')">Download Today</button>
+    <button class="btn btn-primary btn-sm" onclick="exportDashboardData('week')">Download Week</button>
+    <button class="btn btn-primary btn-sm" onclick="exportDashboardData('month')">Download Month</button>
+    <button class="btn btn-secondary btn-sm" onclick="toggleView()">Toggle View</button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <div class="card text-white bg-primary">
+        <div class="card-body">
+          <h5 class="card-title">Total Sales</h5>
+          <h2 id="totalSales">₹0.00</h2>
+          <p class="card-text"><span id="salesChange">0%</span> vs previous period</p>
         </div>
       </div>
-      
-      <!-- Charts Row -->
-      <div class="row mb-3">
-        <div class="col-md-8">
-          <div class="card">
-            <div class="card-header">
-              <h5>Sales Trend</h5>
-            </div>
-            <div class="card-body">
-              <canvas id="salesTrendChart" height="250"></canvas>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-success">
+        <div class="card-body">
+          <h5 class="card-title">Total Quantity</h5>
+          <h2 id="totalQuantity">0</h2>
+          <p class="card-text"><span id="quantityChange">0%</span> vs previous period</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-info">
+        <div class="card-body">
+          <h5 class="card-title">Products Sold</h5>
+          <h2 id="totalProducts">0</h2>
+          <p class="card-text"><span id="productsChange">0%</span> vs previous period</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-warning">
+        <div class="card-body">
+          <h5 class="card-title">Avg. Sale</h5>
+          <h2 id="avgSale">₹0.00</h2>
+          <p class="card-text"><span id="avgSaleChange">0%</span> vs previous period</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product/Quantity Toggle View -->
+  <div id="productView">
+    <div class="row mb-3">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between">
+            <h5>Sales Trend</h5>
+            <div>
+              <button class="btn btn-sm btn-outline-secondary" onclick="toggleChartType('sales')">
+                <i class="bi bi-bar-chart"></i> Toggle Chart
+              </button>
             </div>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-header">
-              <h5>Top Products</h5>
-            </div>
-            <div class="card-body">
-              <canvas id="topProductsChart" height="250"></canvas>
-            </div>
+          <div class="card-body">
+            <canvas id="salesTrendChart" height="250"></canvas>
           </div>
         </div>
       </div>
-      
-      <!-- Bottom Row -->
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              <h5>Recent Transactions</h5>
-            </div>
-            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
-              <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th>Time</th>
-                    <th>Dealer</th>
-                    <th>Amount</th>
-                  </tr>
-                </thead>
-                <tbody id="recentTransactions">
-                  <!-- Will be populated by JavaScript -->
-                </tbody>
-              </table>
-            </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h5>Top Products by Revenue</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="topProductsChart" height="250"></canvas>
           </div>
         </div>
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              <h5>Stock Alerts</h5>
-            </div>
-            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
-              <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Stock</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="stockAlerts">
-                  <!-- Will be populated by JavaScript -->
-                </tbody>
-              </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="quantityView" style="display:none;">
+    <div class="row mb-3">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between">
+            <h5>Quantity Trend</h5>
+            <div>
+              <button class="btn btn-sm btn-outline-secondary" onclick="toggleChartType('quantity')">
+                <i class="bi bi-bar-chart"></i> Toggle Chart
+              </button>
             </div>
           </div>
+          <div class="card-body">
+            <canvas id="quantityTrendChart" height="250"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h5>Top Products by Quantity</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="topQuantityChart" height="250"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Tables -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5>Product Performance</h5>
+        </div>
+        <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Size</th>
+                <th>Qty</th>
+                <th>Revenue</th>
+                <th>% of Total</th>
+              </tr>
+            </thead>
+            <tbody id="productPerformance">
+              <!-- Will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5>Daily Summary</h5>
+        </div>
+        <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Invoices</th>
+                <th>Qty</th>
+                <th>Revenue</th>
+              </tr>
+            </thead>
+            <tbody id="dailySummary">
+              <!-- Will be populated by JavaScript -->
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -670,6 +716,436 @@
   const draftInvoices = JSON.parse(localStorage.getItem('draftInvoices')) || [];
   let salesTrendChart = null;
   let topProductsChart = null;
+  // Add these global variables
+let currentView = 'product'; // 'product' or 'quantity'
+let salesTrendChart = null;
+let quantityTrendChart = null;
+let topProductsChart = null;
+let topQuantityChart = null;
+let currentChartType = { sales: 'line', quantity: 'line' };
+
+// Toggle between product and quantity views
+function toggleView() {
+  const productView = document.getElementById('productView');
+  const quantityView = document.getElementById('quantityView');
+  
+  if (currentView === 'product') {
+    productView.style.display = 'none';
+    quantityView.style.display = 'block';
+    currentView = 'quantity';
+  } else {
+    productView.style.display = 'block';
+    quantityView.style.display = 'none';
+    currentView = 'product';
+  }
+  
+  // Redraw charts for the current view
+  loadDashboardData();
+}
+
+// Toggle chart type (line/bar)
+function toggleChartType(chartGroup) {
+  currentChartType[chartGroup] = currentChartType[chartGroup] === 'line' ? 'bar' : 'line';
+  loadDashboardData();
+}
+
+// Enhanced getDashboardData function
+async function getDashboardData(startDate, endDate) {
+  const result = {
+    totalSales: 0,
+    totalQuantity: 0,
+    totalProducts: 0,
+    transactionCount: 0,
+    salesByDay: {},
+    quantityByDay: {},
+    salesByProduct: {},
+    quantityByProduct: {},
+    recentTransactions: [],
+    dailySummaries: []
+  };
+  
+  // Get invoices for the period
+  const invoicesQuery = query(
+    collection(db, 'invoices'),
+    where('invoiceDate', '>=', startDate),
+    where('invoiceDate', '<=', endDate),
+    where('status', '==', 'approved'),
+    orderBy('invoiceDate', 'desc')
+  );
+  
+  const invoicesSnapshot = await getDocs(invoicesQuery);
+  result.transactionCount = invoicesSnapshot.size;
+  
+  // Process each invoice
+  invoicesSnapshot.forEach(doc => {
+    const invoice = doc.data();
+    const invoiceDate = invoice.invoiceDate.toDate();
+    const dayKey = invoiceDate.toLocaleDateString();
+    
+    result.totalSales += invoice.total;
+    
+    // Initialize daily summaries if not exists
+    if (!result.dailySummaries.find(d => d.date === dayKey)) {
+      result.dailySummaries.push({
+        date: dayKey,
+        invoices: 0,
+        quantity: 0,
+        revenue: 0
+      });
+    }
+    
+    // Update daily summary
+    const dailySummary = result.dailySummaries.find(d => d.date === dayKey);
+    dailySummary.invoices += 1;
+    dailySummary.revenue += invoice.total;
+    
+    // Process items
+    invoice.items.forEach(item => {
+      const productQty = item.qty;
+      result.totalQuantity += productQty;
+      result.totalProducts += 1;
+      dailySummary.quantity += productQty;
+      
+      // Group by day
+      if (!result.salesByDay[dayKey]) {
+        result.salesByDay[dayKey] = 0;
+        result.quantityByDay[dayKey] = 0;
+      }
+      result.salesByDay[dayKey] += item.amount;
+      result.quantityByDay[dayKey] += productQty;
+      
+      // Group by product
+      const productKey = `${item.name}|${item.size}`;
+      if (!result.salesByProduct[productKey]) {
+        result.salesByProduct[productKey] = {
+          name: item.name,
+          size: item.size,
+          quantity: 0,
+          sales: 0
+        };
+        result.quantityByProduct[productKey] = {
+          name: item.name,
+          size: item.size,
+          quantity: 0,
+          sales: 0
+        };
+      }
+      result.salesByProduct[productKey].quantity += productQty;
+      result.salesByProduct[productKey].sales += item.amount;
+      result.quantityByProduct[productKey].quantity += productQty;
+      result.quantityByProduct[productKey].sales += item.amount;
+    });
+    
+    // Add to recent transactions
+    if (result.recentTransactions.length < 5) {
+      result.recentTransactions.push({
+        time: invoiceDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        dealer: invoice.dealer.name,
+        amount: invoice.total
+      });
+    }
+  });
+  
+  // Sort daily summaries by date
+  result.dailySummaries.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  return result;
+}
+
+// Enhanced update functions
+function updateSummaryCards(currentData, previousData = {}) {
+  document.getElementById('totalSales').textContent = `₹${currentData.totalSales.toFixed(2)}`;
+  document.getElementById('totalQuantity').textContent = currentData.totalQuantity;
+  document.getElementById('totalProducts').textContent = Object.keys(currentData.salesByProduct).length;
+  
+  const avgSale = currentData.transactionCount > 0 
+    ? currentData.totalSales / currentData.transactionCount 
+    : 0;
+  document.getElementById('avgSale').textContent = `₹${avgSale.toFixed(2)}`;
+  
+  // Calculate changes vs previous period
+  if (previousData.totalSales !== undefined) {
+    updateChangeIndicator('sales', currentData.totalSales, previousData.totalSales);
+    updateChangeIndicator('quantity', currentData.totalQuantity, previousData.totalQuantity);
+    updateChangeIndicator('products', Object.keys(currentData.salesByProduct).length, 
+      Object.keys(previousData.salesByProduct || {}).length);
+    
+    const prevAvgSale = previousData.transactionCount > 0 
+      ? previousData.totalSales / previousData.transactionCount 
+      : 0;
+    updateChangeIndicator('avgSale', avgSale, prevAvgSale);
+  }
+}
+
+function updateChangeIndicator(field, current, previous) {
+  const change = previous > 0 
+    ? ((current - previous) / previous) * 100 
+    : current > 0 ? 100 : 0;
+  
+  const element = document.getElementById(`${field}Change`);
+  element.textContent = `${change.toFixed(1)}%`;
+  element.className = change >= 0 ? 'text-success' : 'text-danger';
+}
+
+// Enhanced chart functions
+function updateCharts(data) {
+  // Sales Trend Chart
+  const days = Object.keys(data.salesByDay);
+  const salesData = days.map(day => data.salesByDay[day]);
+  const quantityData = days.map(day => data.quantityByDay[day]);
+  
+  updateTrendChart('salesTrendChart', days, salesData, 'Daily Sales', 'Revenue (₹)', currentChartType.sales);
+  updateTrendChart('quantityTrendChart', days, quantityData, 'Daily Quantity', 'Items Sold', currentChartType.quantity);
+  
+  // Top Products Charts
+  const topProductsByRevenue = Object.values(data.salesByProduct)
+    .sort((a, b) => b.sales - a.sales)
+    .slice(0, 5);
+  
+  const topProductsByQuantity = Object.values(data.quantityByProduct)
+    .sort((a, b) => b.quantity - a.quantity)
+    .slice(0, 5);
+  
+  updateTopProductsChart('topProductsChart', 
+    topProductsByRevenue.map(p => `${p.name} (${p.size})`),
+    topProductsByRevenue.map(p => p.sales),
+    'Top Products by Revenue');
+  
+  updateTopProductsChart('topQuantityChart', 
+    topProductsByQuantity.map(p => `${p.name} (${p.size})`),
+    topProductsByQuantity.map(p => p.quantity),
+    'Top Products by Quantity');
+  
+  // Update tables
+  updateProductPerformanceTable(data.salesByProduct);
+  updateDailySummaryTable(data.dailySummaries);
+}
+
+function updateTrendChart(canvasId, labels, data, label, yLabel, chartType) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  
+  // Destroy previous chart if exists
+  if (canvasId === 'salesTrendChart' && salesTrendChart) {
+    salesTrendChart.destroy();
+  } else if (canvasId === 'quantityTrendChart' && quantityTrendChart) {
+    quantityTrendChart.destroy();
+  }
+  
+  const newChart = new Chart(ctx, {
+    type: chartType,
+    data: {
+      labels: labels,
+      datasets: [{
+        label: label,
+        data: data,
+        backgroundColor: chartType === 'bar' ? 'rgba(54, 162, 235, 0.7)' : 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: chartType === 'bar' ? 1 : 2,
+        tension: 0.1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: yLabel
+          }
+        }
+      }
+    }
+  });
+  
+  if (canvasId === 'salesTrendChart') {
+    salesTrendChart = newChart;
+  } else {
+    quantityTrendChart = newChart;
+  }
+}
+
+function updateTopProductsChart(canvasId, labels, data, title) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  
+  // Destroy previous chart if exists
+  if (canvasId === 'topProductsChart' && topProductsChart) {
+    topProductsChart.destroy();
+  } else if (canvasId === 'topQuantityChart' && topQuantityChart) {
+    topQuantityChart.destroy();
+  }
+  
+  const newChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(153, 102, 255, 0.7)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        },
+        title: {
+          display: true,
+          text: title
+        }
+      }
+    }
+  });
+  
+  if (canvasId === 'topProductsChart') {
+    topProductsChart = newChart;
+  } else {
+    topQuantityChart = newChart;
+  }
+}
+
+// Table update functions
+function updateProductPerformanceTable(productsData) {
+  const tbody = document.getElementById('productPerformance');
+  tbody.innerHTML = '';
+  
+  const productsArray = Object.values(productsData);
+  const totalSales = productsArray.reduce((sum, p) => sum + p.sales, 0);
+  
+  // Sort by revenue descending
+  productsArray.sort((a, b) => b.sales - a.sales);
+  
+  productsArray.forEach(product => {
+    const percentage = totalSales > 0 ? (product.sales / totalSales * 100) : 0;
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${product.name}</td>
+      <td>${product.size}</td>
+      <td>${product.quantity}</td>
+      <td>₹${product.sales.toFixed(2)}</td>
+      <td>${percentage.toFixed(1)}%</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function updateDailySummaryTable(dailySummaries) {
+  const tbody = document.getElementById('dailySummary');
+  tbody.innerHTML = '';
+  
+  dailySummaries.forEach(day => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${day.date}</td>
+      <td>${day.invoices}</td>
+      <td>${day.quantity}</td>
+      <td>₹${day.revenue.toFixed(2)}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// Export functionality
+async function exportDashboardData(range) {
+  try {
+    // Determine date range
+    let startDate, endDate = new Date();
+    endDate.setHours(23, 59, 59, 999);
+    
+    switch(range) {
+      case 'today':
+        startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      case 'week':
+        startDate = new Date();
+        startDate.setDate(endDate.getDate() - endDate.getDay()); // Start of week (Sunday)
+        break;
+      case 'month':
+        startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+        break;
+      default:
+        startDate = new Date(0); // All time
+    }
+    
+    // Get data
+    const data = await getDashboardData(startDate, endDate);
+    
+    // Prepare data for export
+    const exportData = {
+      summary: {
+        totalSales: data.totalSales,
+        totalQuantity: data.totalQuantity,
+        totalProducts: Object.keys(data.salesByProduct).length,
+        transactionCount: data.transactionCount
+      },
+      products: Object.values(data.salesByProduct)
+        .sort((a, b) => b.sales - a.sales)
+        .map(p => ({
+          product: `${p.name} (${p.size})`,
+          quantity: p.quantity,
+          revenue: p.sales
+        })),
+      dailySummary: data.dailySummaries
+    };
+    
+    // Create CSV
+    let csv = 'Category,Details\n';
+    csv += `Period,${range}\n`;
+    csv += `Start Date,${startDate.toLocaleDateString()}\n`;
+    csv += `End Date,${endDate.toLocaleDateString()}\n\n`;
+    
+    // Summary section
+    csv += 'SUMMARY\n';
+    csv += 'Metric,Value\n';
+    csv += `Total Sales,${exportData.summary.totalSales.toFixed(2)}\n`;
+    csv += `Total Quantity,${exportData.summary.totalQuantity}\n`;
+    csv += `Unique Products,${exportData.summary.totalProducts}\n`;
+    csv += `Transactions,${exportData.summary.transactionCount}\n\n`;
+    
+    // Products section
+    csv += 'PRODUCT PERFORMANCE\n';
+    csv += 'Product,Quantity,Revenue\n';
+    exportData.products.forEach(p => {
+      csv += `${p.product},${p.quantity},${p.revenue.toFixed(2)}\n`;
+    });
+    csv += '\n';
+    
+    // Daily summary
+    csv += 'DAILY SUMMARY\n';
+    csv += 'Date,Invoices,Quantity,Revenue\n';
+    exportData.dailySummary.forEach(d => {
+      csv += `${d.date},${d.invoices},${d.quantity},${d.revenue.toFixed(2)}\n`;
+    });
+    
+    // Download CSV
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `campa_sales_${range}_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    
+  } catch (error) {
+    console.error("Error exporting data:", error);
+    alert('Error exporting data: ' + error.message);
+  }
+}
+  
 
   // Initialize the app
   function initApp() {
