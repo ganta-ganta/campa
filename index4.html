@@ -383,6 +383,11 @@
         <i class="bi bi-people"></i> Operator Sales
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" href="#historyTab">
+       <i class="bi bi-clock-history"></i> History
+      </a>
+     </li>
     <li class="nav-item ms-auto">
       <button onclick="logout()" class="btn btn-danger btn-sm">
         <i class="bi bi-box-arrow-left"></i> Logout
@@ -1070,6 +1075,63 @@
               <canvas id="operatorPerformanceChart" height="300"></canvas>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Add this as a new tab pane in the tab-content div -->
+<div class="tab-pane fade" id="historyTab">
+  <h3><i class="bi bi-graph-up"></i> Historical Data Analysis</h3>
+  
+  <div class="card mb-3">
+    <div class="card-header">
+      <i class="bi bi-funnel"></i> Filters
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label"><i class="bi bi-calendar"></i> Start Date</label>
+          <input type="date" id="historyStartDate" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label"><i class="bi bi-calendar"></i> End Date</label>
+          <input type="date" id="historyEndDate" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label"><i class="bi bi-filter"></i> Filter Type</label>
+          <select id="historyFilterType" class="form-select">
+            <option value="invoices"><i class="bi bi-receipt"></i> Invoices</option>
+            <option value="products"><i class="bi bi-box-seam"></i> Product Turnover</option>
+            <option value="warehouse"><i class="bi bi-building"></i> Warehouse History</option>
+            <option value="operators"><i class="bi bi-people"></i> Operator History</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="d-flex justify-content-between">
+        <button class="btn btn-primary" onclick="loadHistoryData()">
+          <i class="bi bi-arrow-down-circle"></i> Load Data
+        </button>
+        <button class="btn btn-success" onclick="exportHistoryData()">
+          <i class="bi bi-download"></i> Export
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="historyResults">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-table"></i> Historical Data</h5>
+      </div>
+      <div class="card-body p-0">
+        <div style="overflow-x: auto;">
+          <table class="table mb-0">
+            <thead id="historyTableHeader"></thead>
+            <tbody id="historyTableBody"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -3123,7 +3185,356 @@
       tbody.appendChild(row);
     });
   }
+// Add these functions to your JavaScript
+async function loadHistoryData() {
+  try {
+    const startDate = new Date(document.getElementById('historyStartDate').value);
+    const endDate = new Date(document.getElementById('historyEndDate').value);
+    const filterType = document.getElementById('historyFilterType').value;
+    
+    if (!startDate || !endDate) {
+      alert('Please select both start and end dates');
+      return;
+    }
+    
+    endDate.setHours(23, 59, 59, 999);
+    
+    let data, headers;
+    
+    switch(filterType) {
+      case 'invoices':
+        [data, headers] = await loadInvoiceHistory(startDate, endDate);
+        break;
+      case 'products':
+        [data, headers] = await loadProductTurnover(startDate, endDate);
+        break;
+      case 'warehouse':
+        [data, headers] = await loadWarehouseHistory(startDate, endDate);
+        break;
+      case 'operators':
+        [data, headers] = await loadOperatorHistory(startDate, endDate);
+        break;
+    }
+    
+    updateHistoryTable(headers, data);
+    
+  } catch (error) {
+    console.error("Error loading history data:", error);
+    alert('Error loading history: ' + error.message);
+  }
+}
 
+async function loadInvoiceHistory(startDate, endDate) {
+  const q = query(
+    collection(db, 'invoices'),
+    where('invoiceDate', '>=', startDate),
+    where('invoiceDate', '<=', endDate),
+    orderBy('invoiceDate', 'desc')
+  );
+  
+  const querySnapshot = await getDocs(q);
+  const invoices = [];
+  
+  querySnapshot.forEach(doc => {
+    const invoice = doc.data();
+    invoices.push({
+      id: doc.id,
+      invoiceNo: invoice.invoiceNo,
+      date: invoice.invoiceDate.toDate().toLocaleDateString(),
+      dealer: invoice.dealer.name,
+      operator: invoice.createdBy,
+      items: invoice.items.length,
+      quantity: invoice.items.reduce((sum, item) => sum + item.qty, 0),
+      amount: invoice.total,
+      status: invoice.status
+    });
+  });
+  
+  const headers = [
+    'Invoice No', 'Date', 'Dealer', 'Operator', 
+    'Items', 'Quantity', 'Amount', 'Status'
+  ];
+  
+  return [invoices, headers];
+}
+
+async function loadProductTurnover(startDate, endDate) {
+  // Get all invoices in period
+  const invoicesQuery = query(
+    collection(db, 'invoices'),
+    where('invoiceDate', '>=', startDate),
+    where('invoiceDate', '<=', endDate),
+    where('status', '==', 'approved')
+  );
+  
+  const invoicesSnapshot = await getDocs(invoicesQuery);
+  const productData = {};
+  
+  // Process each invoice
+  invoicesSnapshot.forEach(doc => {
+    const invoice = doc.data();
+    invoice.items.forEach(item => {
+      const key = `${item.name}|${item.size}`;
+      if (!productData[key]) {
+        productData[key] = {
+          name: item.name,
+          size: item.size,
+          quantity: 0,
+          amount: 0,
+          invoices: 0
+        };
+      }
+      productData[key].quantity += item.qty;
+      productData[key].amount += item.amount;
+      productData[key].invoices += 1;
+    });
+  });
+  
+  // Get warehouse movements
+  const movementsQuery = query(
+    collection(db, 'stockTransactions'),
+    where('timestamp', '>=', startDate),
+    where('timestamp', '<=', endDate)
+  );
+  
+  const movementsSnapshot = await getDocs(movementsQuery);
+  movementsSnapshot.forEach(doc => {
+    const movement = doc.data();
+    const key = `${movement.product.name}|${movement.product.size}`;
+    
+    if (!productData[key]) {
+      productData[key] = {
+        name: movement.product.name,
+        size: movement.product.size,
+        quantity: 0,
+        amount: 0,
+        invoices: 0,
+        loaded: 0,
+        unloaded: 0
+      };
+    }
+    
+    if (movement.type === 'load') {
+      productData[key].loaded = (productData[key].loaded || 0) + movement.quantity;
+    } else {
+      productData[key].unloaded = (productData[key].unloaded || 0) + movement.quantity;
+    }
+  });
+  
+  const results = Object.values(productData).map(item => ({
+    product: `${item.name} (${item.size})`,
+    sold: item.quantity,
+    revenue: item.amount,
+    invoices: item.invoices,
+    loaded: item.loaded || 0,
+    unloaded: item.unloaded || 0,
+    turnover: item.quantity / ((item.loaded || 0) + (item.unloaded || 0)) * 100 || 0
+  }));
+  
+  const headers = [
+    'Product', 'Sold', 'Revenue', 'Invoices', 
+    'Loaded', 'Unloaded', 'Turnover %'
+  ];
+  
+  return [results, headers];
+}
+
+async function loadWarehouseHistory(startDate, endDate) {
+  const q = query(
+    collection(db, 'stockTransactions'),
+    where('timestamp', '>=', startDate),
+    where('timestamp', '<=', endDate),
+    orderBy('timestamp', 'desc')
+  );
+  
+  const querySnapshot = await getDocs(q);
+  const movements = [];
+  
+  querySnapshot.forEach(doc => {
+    const movement = doc.data();
+    movements.push({
+      date: movement.timestamp.toDate().toLocaleDateString(),
+      type: movement.type,
+      product: `${movement.product.name} (${movement.product.size})`,
+      quantity: movement.quantity,
+      operator: movement.operatorEmail || 'System',
+      actionBy: movement.approvedBy || 'System'
+    });
+  });
+  
+  const headers = [
+    'Date', 'Type', 'Product', 'Quantity', 'Operator', 'Action By'
+  ];
+  
+  return [movements, headers];
+}
+
+async function loadOperatorHistory(startDate, endDate) {
+  // Get operator invoices
+  const invoicesQuery = query(
+    collection(db, 'invoices'),
+    where('invoiceDate', '>=', startDate),
+    where('invoiceDate', '<=', endDate),
+    orderBy('invoiceDate', 'desc')
+  );
+  
+  const invoicesSnapshot = await getDocs(invoicesQuery);
+  const operatorData = {};
+  
+  invoicesSnapshot.forEach(doc => {
+    const invoice = doc.data();
+    const operatorKey = invoice.createdBy;
+    
+    if (!operatorData[operatorKey]) {
+      operatorData[operatorKey] = {
+        email: invoice.createdBy,
+        invoices: 0,
+        items: 0,
+        amount: 0,
+        stockRequests: 0,
+        stockLoaded: 0
+      };
+    }
+    
+    operatorData[operatorKey].invoices += 1;
+    operatorData[operatorKey].items += invoice.items.length;
+    operatorData[operatorKey].amount += invoice.total;
+  });
+  
+  // Get stock requests
+  const requestsQuery = query(
+    collection(db, 'stockRequests'),
+    where('timestamp', '>=', startDate),
+    where('timestamp', '<=', endDate)
+  );
+  
+  const requestsSnapshot = await getDocs(requestsQuery);
+  requestsSnapshot.forEach(doc => {
+    const request = doc.data();
+    const operatorKey = request.operatorEmail;
+    
+    if (!operatorData[operatorKey]) {
+      operatorData[operatorKey] = {
+        email: request.operatorEmail,
+        invoices: 0,
+        items: 0,
+        amount: 0,
+        stockRequests: 0,
+        stockLoaded: 0
+      };
+    }
+    
+    operatorData[operatorKey].stockRequests += 1;
+    if (request.status === 'approved') {
+      operatorData[operatorKey].stockLoaded += request.quantity;
+    }
+  });
+  
+  const results = Object.values(operatorData).map(op => ({
+    operator: op.email,
+    invoices: op.invoices,
+    items: op.items,
+    amount: op.amount,
+    requests: op.stockRequests,
+    loaded: op.stockLoaded,
+    avgInvoice: op.invoices > 0 ? op.amount / op.invoices : 0
+  }));
+  
+  const headers = [
+    'Operator', 'Invoices', 'Items', 'Amount', 
+    'Stock Requests', 'Stock Loaded', 'Avg. Invoice'
+  ];
+  
+  return [results, headers];
+}
+
+function updateHistoryTable(headers, data) {
+  const headerRow = document.getElementById('historyTableHeader');
+  const body = document.getElementById('historyTableBody');
+  
+  // Clear existing content
+  headerRow.innerHTML = '';
+  body.innerHTML = '';
+  
+  // Add headers
+  headers.forEach(header => {
+    const th = document.createElement('th');
+    th.textContent = header;
+    headerRow.appendChild(th);
+  });
+  
+  // Add data rows
+  if (data.length === 0) {
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = headers.length;
+    cell.textContent = 'No data found for selected filters';
+    cell.className = 'text-center';
+    row.appendChild(cell);
+    body.appendChild(row);
+    return;
+  }
+  
+  data.forEach(item => {
+    const row = document.createElement('tr');
+    Object.values(item).forEach(value => {
+      const cell = document.createElement('td');
+      
+      // Format numbers and currency
+      if (typeof value === 'number') {
+        if (value % 1 !== 0) {
+          cell.textContent = value.toFixed(2);
+        } else {
+          cell.textContent = value;
+        }
+        
+        if (headers.includes('Amount') || headers.includes('Revenue')) {
+          cell.textContent = '₹' + cell.textContent;
+        }
+      } else {
+        cell.textContent = value;
+      }
+      
+      row.appendChild(cell);
+    });
+    body.appendChild(row);
+  });
+}
+
+function exportHistoryData() {
+  const headers = Array.from(document.getElementById('historyTableHeader').querySelectorAll('th'))
+    .map(th => th.textContent);
+  
+  const rows = Array.from(document.getElementById('historyTableBody').querySelectorAll('tr'))
+    .map(tr => Array.from(tr.querySelectorAll('td')).map(td => {
+      // Remove ₹ symbol if present
+      return td.textContent.replace('₹', '');
+    }));
+  
+  const csvContent = [headers, ...rows]
+    .map(row => row.join(','))
+    .join('\n');
+  
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  
+  const filterType = document.getElementById('historyFilterType').value;
+  const startDate = document.getElementById('historyStartDate').value;
+  const endDate = document.getElementById('historyEndDate').value;
+  
+  a.download = `campa_${filterType}_${startDate}_to_${endDate}.csv`;
+  a.click();
+}
+
+// Add to your window.onload function to set default dates
+const today = new Date();
+const oneMonthAgo = new Date();
+oneMonthAgo.setMonth(today.getMonth() - 1);
+
+document.getElementById('historyStartDate').valueAsDate = oneMonthAgo;
+document.getElementById('historyEndDate').valueAsDate = today;
   async function updateStockAlerts() {
     try {
       const tbody = document.getElementById('stockAlerts');
