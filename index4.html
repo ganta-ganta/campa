@@ -767,6 +767,25 @@
       loadPendingStockRequests();
     }
   }
+  function refreshCurrentTab() {
+  const activeTab = document.querySelector('.nav-tabs .nav-link.active');
+  if (activeTab) {
+    const tabId = activeTab.getAttribute('href');
+    if (tabId === '#invoiceTab') {
+      // Refresh invoice tab if needed
+    } else if (tabId === '#stockTab') {
+      loadVanStock();
+      loadPendingRequests();
+    } else if (tabId === '#adminTab') {
+      loadPendingApprovals();
+      loadPendingStockRequests();
+      loadWarehouseStock();
+      loadRecentInvoices();
+    } else if (tabId === '#dashboardTab') {
+      loadDashboardData();
+    }
+  }
+  }
 
   // Create invoice modal for detailed view
   function createInvoiceModal() {
