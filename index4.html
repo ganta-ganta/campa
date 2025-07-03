@@ -767,6 +767,23 @@
       loadPendingStockRequests();
     }
   }
+  async function getDashboardData(startDate, endDate) {
+  try {
+    const invoicesQuery = query(
+      collection(db, 'invoices'),
+      where('status', '==', 'approved'),
+      where('invoiceDate', '>=', startDate),
+      where('invoiceDate', '<=', endDate),
+      orderBy('invoiceDate', 'desc') // Must match index order
+    );
+
+    const querySnapshot = await getDocs(invoicesQuery);
+    // ... rest of your processing code
+  } catch (error) {
+    console.error("Query error:", error);
+    throw error;
+  }
+}
 
   // Create invoice modal for detailed view
   function createInvoiceModal() {
