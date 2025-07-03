@@ -3290,6 +3290,7 @@ async function loadProductTurnover(startDate, endDate) {
     });
   });
   
+  
   // Get warehouse movements
   const movementsQuery = query(
     collection(db, 'stockTransactions'),
@@ -3596,7 +3597,27 @@ document.getElementById('historyEndDate').valueAsDate = today;
         default:
           startDate = new Date(0); // All time
       }
-      
+      // Define the function first
+async function loadHistoryData() {
+  try {
+    const startDate = document.getElementById('historyStartDate').value;
+    const endDate = document.getElementById('historyEndDate').value;
+    const filterType = document.getElementById('historyFilterType').value;
+    
+    if (!startDate || !endDate) {
+      alert('Please select both start and end dates');
+      return;
+    }
+    
+    // Rest of your history loading logic
+    // ...
+    
+  } catch (error) {
+    console.error("Error loading history data:", error);
+    alert("Error loading history: " + error.message);
+  }
+}
+
       // Get data
       const data = await getDashboardData(startDate, endDate);
       
@@ -3684,6 +3705,8 @@ document.getElementById('historyEndDate').valueAsDate = today;
   window.loadOperatorSales = loadOperatorSales;
   window.exportOperatorSales = exportOperatorSales;
   window.exportDashboardData = exportDashboardData;
+  // Then expose it to window
+window.loadHistoryData = loadHistoryData;
 
   // Initialize the app when page loads
   window.onload = initApp;
